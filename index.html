@@ -54,20 +54,6 @@
                 <div id="mistoContent"></div>
             </div>
 
-            <!-- TAXA DE ENTREGA -->
-            <div class="taxa-container">
-                <label><i class="fas fa-map-marker-alt"></i> Localização (Taxa de Entrega):</label>
-                <select id="bairroSelect" class="taxa-select">
-                    <option value="Sitio Destino" data-taxa="0" selected>📍 Moro no Sítio Destino - Taxa Grátis</option>
-                    <option value="Sítio Barreiros" data-taxa="5.00">📍 Sítio Barreiros - R$ 5,00</option>
-                    <option value="FZ Barra" data-taxa="3.00">📍 FZ: Barra - R$ 3,00</option>
-                    <option value="FZ Racharia" data-taxa="5.00">📍 FZ: Racharia - R$ 5,00</option>
-                    <option value="Fz Mlh do Canto" data-taxa="3.00">📍 FZ: MLH do Canto - R$ 3,00</option>
-                    <option value="Fz Encruzilhada" data-taxa="3.00">📍 FZ: Encruzilhada - R$ 3,00</option>
-                    <option value="Umas" data-taxa="3.00">📍 Úmãs - R$ 3,00</option>
-                    <option value="Retirada no Local" data-taxa="0">📍 Retirar no local - Grátis</option>
-                </select>
-            </div>
         </section>
 
         <!-- BOTÃO DO CARRINHO -->
@@ -81,6 +67,26 @@
             <button class="close-cart" id="closeCart">&times;</button>
             <h3><i class="fas fa-shopping-cart"></i> Seu Carrinho</h3>
             <div id="cartItems"></div>
+
+
+            <div class="taxa-container" style="margin: 10px 0; padding: 10px 0; ">
+                <label style="font-size: 0.9rem; font-weight: bold;"><i class="fas fa-map-marker-alt"></i>
+                    Localização:</label>
+                <select id="bairroSelect" class="taxa-select"
+                    style="width: 100%; margin-top: 5px; padding: 8px; border-radius: 5px;">
+                    <option value="Sitio Destino" data-taxa="0" selected>📍 Moro no Sítio Destino - Taxa Grátis</option>
+                    <option value="Sitio Pau de colher" data-taxa="3.00">📍 Sítio Pau de Colher- R$ 3,00</option>
+                    <option value="Sitio Espinheiro" data-taxa="4.00">📍 Sítio Espinhos - R$ 4,00</option>
+                    <option value="Sítio Barreiros" data-taxa="5.00">📍 Sítio Barreiros - R$ 5,00</option>
+                    <option value="FZ Barra" data-taxa="3.00">📍 FZ: Barra - R$ 3,00</option>
+                    <option value="FZ Racharia" data-taxa="6.00">📍 FZ: Racharia - R$ 6,00</option>
+                    <option value="Fz Mlh do Canto" data-taxa="3.00">📍 FZ: MLH do Canto - R$ 3,00</option>
+                    <option value="Fz Encruzilhada" data-taxa="3.00">📍 FZ: Encruzilhada - R$ 3,00</option>
+                    <option value="Umas" data-taxa="3.00">📍 Úmãs - R$ 3,00</option>
+                    <option value="Retirada no Local" data-taxa="0">📍 Retirar no local - Grátis</option>
+                </select>
+            </div>
+
             <div class="cart-total">
                 <strong>Subtotal: R$ <span id="cartSubtotal">0,00</span></strong><br>
                 <strong>Taxa Entrega: R$ <span id="cartTaxa">0,00</span></strong><br>

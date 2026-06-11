@@ -156,8 +156,21 @@ function finalizarPedido() {
     mensagem += "Forma de pagamento: _Digite aqui_\n\n";
     mensagem += "🔥 *Pedido via S.O.S Pizza - Delivery 18h às 21h*";
 
-    const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
+    // Modifiquei o "numeroWhatsApp" para o número direto que estava no seu HTML, 
+    // caso você não tenha essa variável declarada em outro lugar do código.
+    const numero = typeof numeroWhatsApp !== 'undefined' ? numeroWhatsApp : '5587981004878';
+    const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
     window.open(url, '_blank');
+
+    // =========================================================
+    // SOLUÇÃO: LIMPAR O CARRINHO APÓS O ENVIO
+    // =========================================================
+    carrinho = [];          // 1. Limpa a lista no JavaScript
+    salvarCarrinho();       // 2. Salva o carrinho vazio no localStorage
+    atualizarInterface();   // 3. Atualiza os totais e textos na tela para R$ 0,00
+
+    // 4. Fecha a barra lateral automaticamente substituindo 'open' por 'close' (ou removendo 'open')
+    document.getElementById('cartSidebar').classList.remove('open');
 }
 
 // RENDERIZAR CARDÁPIO TRADICIONAL
@@ -180,6 +193,16 @@ function renderizarTradicional() {
             </div>
         `).join('');
 }
+
+// Monitora quando o usuário muda a localização dentro do carrinho e atualiza o preço na hora
+document.addEventListener("DOMContentLoaded", () => {
+    const bairroSelect = document.getElementById('bairroSelect');
+    if (bairroSelect) {
+        bairroSelect.addEventListener('change', () => {
+            atualizarInterface(); // Recalcula os valores e atualiza o total na tela
+        });
+    }
+});
 
 // RENDERIZAR CARDÁPIO MISTO
 function renderizarMisto() {
