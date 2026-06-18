@@ -3,6 +3,8 @@
 // ============================================
 const numeroWhatsApp = "5587981004878";
 
+
+
 // CARDÁPIO TRADICIONAL
 const cardapioTradicional = [
     { nome: "MUÇARELA", desc: "Molho, muçarela, orégano, tomate e azeitonas.", imagem: "assets/img/mussarela.webp", tamanhos: [{ tipo: "Grande", preco: 37 }, { tipo: "Média", preco: 27 }] },
@@ -10,7 +12,9 @@ const cardapioTradicional = [
     { nome: "PORTUGUESA", desc: "Molho, muçarela, presunto, ovos, pimentão e azeitonas.", imagem: "assets/img/portuguesa.webp", tamanhos: [{ tipo: "Grande", preco: 42 }, { tipo: "Média", preco: 32 }] },
     { nome: "FRANGO", desc: "Molho, muçarela, frango desfiado, milho e azeitonas.", imagem: "assets/img/frango.webp", tamanhos: [{ tipo: "Grande", preco: 42 }, { tipo: "Média", preco: 32 }] },
     { nome: "BOLONHESA", desc: "Molho, carne moída, muçarela, cebola e azeitonas.", imagem: "assets/img/bolonhesa.webp", tamanhos: [{ tipo: "Grande", preco: 45 }, { tipo: "Média", preco: 35 }] },
-    { nome: "PRESUNTO", desc: "Presunto, muçarela, orégano e azeitonas.", imagem: "assets/img/presunto.png", tamanhos: [{ tipo: "Grande", preco: 38 }, { tipo: "Média", preco: 28 }] }
+    { nome: "PRESUNTO", desc: "Presunto, muçarela, orégano e azeitonas.", imagem: "assets/img/presunto.png", tamanhos: [{ tipo: "Grande", preco: 38 }, { tipo: "Média", preco: 28 }] },
+    // Adicione mais pizzas aqui...
+    { nome: "2 - Queijo", desc: "Muçarela, orégano, requeijão e azeitonas.", imagem: "assets/img/vegetariana.webp", tamanhos: [{ tipo: "Grande", preco: 38 }, { tipo: "Média", preco: 28 }] },
 ];
 
 // CARDÁPIO MISTO (Meio a Meio)
@@ -20,37 +24,62 @@ const cardapioMisto = {
         { nome: "MUSSARELA / PORTUGUESA", imagem: "assets/img/mussarela-x-portuguesa.webp", precoG: 39.50, precoM: 29.50 },
         { nome: "MUSSARELA / FRANGO", imagem: "assets/img/mussarela-x-frango.webp", precoG: 39.50, precoM: 29.50 },
         { nome: "MUSSARELA / BOLONHESA", imagem: "assets/img/mussarela-x-bolonhesa.webp", precoG: 41, precoM: 31 },
-        { nome: "MUSSARELA / PRESUNTO", imagem: "assets/img/mussarela-x-presunto.webp", precoG: 37.50, precoM: 27.50 }
+        { nome: "MUSSARELA / PRESUNTO", imagem: "assets/img/mussarela-x-presunto.webp", precoG: 37.50, precoM: 27.50 },
+        { nome: "MUSSARELA / 2 - QUEIJO", imagem: "assets/img/mussarela-x-2queijo.webp", precoG: 38.00, precoM: 28.00 }
     ],
     "Mix Calabresa": [
         { nome: "CALABRESA / MUSSARELA", imagem: "assets/img/calabresa-x-mussarela.webp", precoG: 38, precoM: 28 },
         { nome: "CALABRESA / PORTUGUESA", imagem: "assets/img/calabresa-x-portuguesa.webp", precoG: 40.50, precoM: 30.50 },
         { nome: "CALABRESA / FRANGO", imagem: "assets/img/calabresa-x-frango.webp", precoG: 40.50, precoM: 30.50 },
         { nome: "CALABRESA / BOLONHESA", imagem: "assets/img/calabresa-x-bolonhesa.webp", precoG: 42, precoM: 32 },
-        { nome: "CALABRESA / PRESUNTO", imagem: "assets/img/calabresa-x-presunto.webp", precoG: 38.50, precoM: 28.50 }
+        { nome: "CALABRESA / PRESUNTO", imagem: "assets/img/calabresa-x-presunto.webp", precoG: 38.50, precoM: 28.50 },
+        { nome: "CALABRESA / 2 - QUEIJO", imagem: "assets/img/calabresa-x-2queijo.webp", precoG: 38.00, precoM: 28.00 }
     ],
     "Mix Portuguesa": [
         { nome: "PORTUGUESA / MUSSARELA", imagem: "assets/img/portuguesa-x-mussarela.webp", precoG: 39.50, precoM: 29.50 },
         { nome: "PORTUGUESA / CALABRESA", imagem: "assets/img/portuguesa-x-calabresa.webp", precoG: 40.50, precoM: 30.50 },
         { nome: "PORTUGUESA / FRANGO", imagem: "assets/img/portuguesa-x-frango.webp", precoG: 42, precoM: 32 },
         { nome: "PORTUGUESA / BOLONHESA", imagem: "assets/img/portuguesa-x-bolonhesa.webp", precoG: 43.50, precoM: 33.50 },
-        { nome: "PORTUGUESA / PRESUNTO", imagem: "assets/img/portuguesa-x-presunto.webp", precoG: 40, precoM: 30 }
+        { nome: "PORTUGUESA / PRESUNTO", imagem: "assets/img/portuguesa-x-presunto.webp", precoG: 40, precoM: 30 },
+        { nome: "PORTUGUESA / 2 - QUEIJO", imagem: "assets/img/portuguesa-x-2queijo.webp", precoG: 40.00, precoM: 30.00 }
     ],
     "Mix Frango": [
         { nome: "FRANGO / MUSSARELA", imagem: "assets/img/frango-x-mussarela.webp", precoG: 39.50, precoM: 29.50 },
         { nome: "FRANGO / CALABRESA", imagem: "assets/img/frango-x-calabresa.webp", precoG: 40.50, precoM: 30.50 },
         { nome: "FRANGO / PORTUGUESA", imagem: "assets/img/frango-x-portuguesa.webp", precoG: 42, precoM: 32 },
         { nome: "FRANGO / BOLONHESA", imagem: "assets/img/frango-x-bolonhesa.webp", precoG: 43.50, precoM: 33.50 },
-        { nome: "FRANGO / PRESUNTO", imagem: "assets/img/frango-x-presunto.webp", precoG: 40, precoM: 30 }
+        { nome: "FRANGO / PRESUNTO", imagem: "assets/img/frango-x-presunto.webp", precoG: 40, precoM: 30 },
+        { nome: "FRANGO / 2 - QUEIJO", imagem: "assets/img/frango-x-2queijo.webp", precoG: 40.00, precoM: 30.00 }
     ],
     "Mix Presunto": [
         { nome: "PRESUNTO / MUSSARELA", imagem: "assets/img/presunto-x-mussarela.webp", precoG: 37.50, precoM: 27.50 },
         { nome: "PRESUNTO / CALABRESA", imagem: "assets/img/presunto-x-calabresa.webp", precoG: 38.50, precoM: 28.50 },
         { nome: "PRESUNTO / PORTUGUESA", imagem: "assets/img/presunto-x-portuguesa.webp", precoG: 40, precoM: 30 },
         { nome: "PRESUNTO / FRANGO", imagem: "assets/img/presunto-x-frango.webp", precoG: 40, precoM: 30 },
-        { nome: "PRESUNTO / BOLONHESA", imagem: "assets/img/presunto-x-bolonhesa.webp", precoG: 41.50, precoM: 31.50 }
+        { nome: "PRESUNTO / BOLONHESA", imagem: "assets/img/presunto-x-bolonhesa.webp", precoG: 41.50, precoM: 31.50 },
+        { nome: "PRESUNTO / 2 - QUEIJO", imagem: "assets/img/presunto-x-2queijo.webp", precoG: 38.50, precoM: 28.50 }
+    ],
+    "Mix 2 - Queijo": [
+        { nome: "2 - QUEIJO / MUSSARELA", imagem: "assets/img/2queijo-x-mussarela.webp", precoG: 37.00, precoM: 27.00 },
+        { nome: "2 - QUEIJO / CALABRESA", imagem: "assets/img/2queijo-x-calabresa.webp", precoG: 38.00, precoM: 28.00 },
+        { nome: "2 - QUEIJO / PORTUGUESA", imagem: "assets/img/2queijo-x-portuguesa.webp", precoG: 40.00, precoM: 30.00 },
+        { nome: "2 - QUEIJO / FRANGO", imagem: "assets/img/2queijo-x-frango.webp", precoG: 40.00, precoM: 30.00 },
+        { nome: "2 - QUEIJO / BOLONHESA", imagem: "assets/img/2queijo-x-bolonhesa.webp", precoG: 42.00, precoM: 32.00 },
+        { nome: "2 - QUEIJO / PRESUNTO", imagem: "assets/img/2queijo-x-presunto.webp", precoG: 38.00, precoM: 28.00 }
     ]
 };
+
+// CARDÁPIO DE BEBIDAS
+
+const cardapioBebidas = [
+    { nome: "COCA-COLA 2L", preco: 12.00, imagem: "./assets/img/imagem-coca-cola.webp" },
+    { nome: "GUARANÁ-ANTARCTICA 2L", preco: 12.00, imagem: "./assets/img/imagem-guarana-antartica.webp" },
+    { nome: "CAJUINA 2L", preco: 12.00, imagem: "./assets/img/imagem-cajuina.webp" },
+    { nome: "IT-COLA 2L", preco: 7.00, imagem: "./assets/img/imagem-it-cola.webp" },
+    { nome: "IT-LIMÃO 2L", preco: 7.00, imagem: "./assets/img/imagem-it-limao.webp" },
+    { nome: "PEPSI 2L", preco: 10.00, imagem: "./assets/img/imagem-pepis.webp" },
+];
+
 
 // CARRINHO (localStorage)
 let carrinho = [];
@@ -119,9 +148,10 @@ function atualizarInterface() {
 
     // Totais
     const subtotal = calcularSubtotal();
-    const taxa = getTaxaEntrega();
-    const total = subtotal + taxa;
+    const taxa = getTaxaEntrega(); // Pega a taxa limpa direto do data-taxa do select
+    const total = subtotal + taxa;  // Soma de forma limpa, sem acumular
 
+    // 3. Atualiza os textos na tela limpando o valor anterior obrigatoriamente
     document.getElementById('cartSubtotal').innerText = subtotal.toFixed(2).replace('.', ',');
     document.getElementById('cartTaxa').innerText = taxa.toFixed(2).replace('.', ',');
     document.getElementById('cartTotal').innerText = total.toFixed(2).replace('.', ',');
@@ -255,25 +285,64 @@ function renderizarMisto() {
     });
 }
 
+// Renderiza seção de bebidas
+function renderizarBebidas() {
+    const container = document.getElementById('bebidasGrid');
+    if (!container) return;
+    container.innerHTML = cardapioBebidas.map(bebida => `
+        <div class="menu-item">
+            <div class="menu-item-image"><img src="${bebida.imagem}" alt="${bebida.nome}" loading="lazy"></div>
+            <div class="menu-item-content">
+                <h3 class="menu-item-name">🥤 ${bebida.nome}</h3>
+                <div>
+                    <button class="btn-add" onclick="adicionarAoCarrinho('${bebida.nome}', 'Unidade', ${bebida.preco})">
+                        Adicionar R$ ${bebida.preco.toFixed(2).replace('.', ',')}
+                    </button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
 // SWITCH ENTRE CARDÁPIOS
 function initSwitch() {
     const btnTrad = document.getElementById('btnTradicional');
     const btnMisto = document.getElementById('btnMisto');
+    const btnBebidas = document.getElementById('btnBebidas');
+
     const tradSection = document.getElementById('tradicionalSection');
     const mistoSection = document.getElementById('mistoSection');
+    const bebidasSection = document.getElementById('bebidasSection');
 
     btnTrad.addEventListener('click', () => {
         btnTrad.classList.add('active');
         btnMisto.classList.remove('active');
+        btnBebidas.classList.remove('active');
         tradSection.classList.add('active');
         mistoSection.classList.remove('active');
+        if (bebidasSection) bebidasSection.classList.remove('active');
     });
 
     btnMisto.addEventListener('click', () => {
         btnMisto.classList.add('active');
         btnTrad.classList.remove('active');
+        btnBebidas.classList.remove('active');
+
         mistoSection.classList.add('active');
         tradSection.classList.remove('active');
+        if (bebidasSection) bebidasSection.classList.remove('active');
+
+    });
+
+    btnBebidas.addEventListener('click', () => {
+        btnBebidas.classList.add('active');
+        btnTrad.classList.remove('active');
+        btnMisto.classList.remove('active');
+
+
+        if (bebidasSection) bebidasSection.classList.add('active');
+        tradSection.classList.remove('active');
+        mistoSection.classList.remove('active');
     });
 }
 
@@ -289,9 +358,11 @@ function initCartControls() {
     document.getElementById('bairroSelect').addEventListener('change', atualizarInterface);
 }
 
-// INICIALIZAR
 renderizarTradicional();
 renderizarMisto();
+renderizarBebidas();
 initSwitch();
 carregarCarrinho();
 initCartControls();
+
+

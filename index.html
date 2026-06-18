@@ -35,12 +35,21 @@
         </section>
 
         <section class="container">
-            <!-- BOTÕES DE SWITCH -->
-            <div class="menu-switch">
-                <button class="switch-btn active" id="btnTradicional"><i class="fas fa-pizza-slice"></i>
-                    Tradicional</button>
-                <button class="switch-btn" id="btnMisto"><i class="fas fa-arrows-alt-h"></i> Misto (Meio a
-                    Meio)</button>
+            <div class="menu-switch-container">
+                <div class="menu-switch-pizzas">
+                    <button class="switch-btn active" id="btnTradicional">
+                        <i class="fas fa-pizza-slice"></i> Tradicional
+                    </button>
+                    <button class="switch-btn" id="btnMisto">
+                        <i class="fas fa-arrows-alt-h"></i> Misto (Meio a Meio)
+                    </button>
+                </div>
+
+                <div class="menu-switch-bebidas">
+                    <button class="switch-btn btn-bebidas-row" id="btnBebidas">
+                        <i class="fas fa-glass-martini-alt"></i> Bebidas
+                    </button>
+                </div>
             </div>
 
             <!-- CARDÁPIO TRADICIONAL -->
@@ -54,6 +63,10 @@
                 <div id="mistoContent"></div>
             </div>
 
+            <!-- CARDÁPIO DE BEBIDAS -->
+            <div id="bebidasSection" class="menu-section">
+                <div class="menu-grid" id="bebidasGrid"></div>
+            </div>
         </section>
 
         <!-- BOTÃO DO CARRINHO -->
