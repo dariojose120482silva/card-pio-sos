@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.O.S Pizza - Cardápio Online</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="./assets/img/favicon-logo.png" type="image/png" style="width: 100px; height: 100px;">
+</head>
+
+<body>
+
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-img">
+                    <img src="./assets/img/favicon-logo.png" alt="S.O.S Pizza Logo">
+                </div>
+                <div class="logo-text">
+                    <h1>S.O.S Pizza</h1>
+                    <p>🍕 Delivery Emergencial • Quartas, Sábados e Domingos • 18h às 21h 🍕</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+
+        <section class="hero">
+            <h2>🔥 Clique nas pizzas que deseja 🔥</h2>
+            <p>Adicione quantas quiser → Escolha a localização → Finalize tudo no WhatsApp</p>
+        </section>
+
+        <section class="container">
+            <div class="menu-switch-container">
+                <div class="menu-switch-pizzas">
+                    <button class="switch-btn active" id="btnTradicional">
+                        <i class="fas fa-pizza-slice"></i> Tradicional
+                    </button>
+                    <button class="switch-btn" id="btnMisto">
+                        <i class="fas fa-arrows-alt-h"></i> Misto (Meio a Meio)
+                    </button>
+                </div>
+
+                <div class="menu-switch-bebidas">
+                    <button class="switch-btn btn-bebidas-row" id="btnBebidas">
+                        <i class="fas fa-glass-martini-alt"></i> Bebidas
+                    </button>
+                </div>
+            </div>
+
+            <!-- CARDÁPIO TRADICIONAL -->
+            <div id="tradicionalSection" class="menu-section active">
+                <div class="menu-grid" id="tradicionalGrid"></div>
+            </div>
+
+            <!-- CARDÁPIO MISTO COM ABAS -->
+            <div id="mistoSection" class="menu-section">
+                <div class="misto-tabs" id="mistoTabs"></div>
+                <div id="mistoContent"></div>
+            </div>
+
+            <!-- CARDÁPIO DE BEBIDAS -->
+            <div id="bebidasSection" class="menu-section">
+                <div class="menu-grid" id="bebidasGrid"></div>
+            </div>
+        </section>
+
+        <!-- BOTÃO DO CARRINHO -->
+        <section class="cart-toggle" id="cartToggle">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-count" id="cartCount">0</span>
+        </section>
+
+        <!-- SIDEBAR DO CARRINHO -->
+        <section class="cart-sidebar" id="cartSidebar">
+            <button class="close-cart" id="closeCart">&times;</button>
+            <h3><i class="fas fa-shopping-cart"></i> Seu Carrinho</h3>
+            <div id="cartItems"></div>
+
+
+            <div class="taxa-container" style="margin: 10px 0; padding: 10px 0; ">
+                <label style="font-size: 0.9rem; font-weight: bold;"><i class="fas fa-map-marker-alt"></i>
+                    Localização:</label>
+                <select id="bairroSelect" class="taxa-select"
+                    style="width: 100%; margin-top: 5px; padding: 8px; border-radius: 5px;">
+                    <option value="Sitio Destino" data-taxa="0" selected>📍 Moro no Sítio Destino - Taxa Grátis</option>
+                    <option value="Sitio Pau de colher" data-taxa="3.00">📍 Sítio Pau de Colher- R$ 3,00</option>
+                    <option value="Sitio Espinheiro" data-taxa="4.00">📍 Sítio Espinhos - R$ 4,00</option>
+                    <option value="Sítio Barreiros" data-taxa="5.00">📍 Sítio Barreiros - R$ 5,00</option>
+                    <option value="FZ Barra" data-taxa="3.00">📍 FZ: Barra - R$ 3,00</option>
+                    <option value="FZ Racharia" data-taxa="6.00">📍 FZ: Racharia - R$ 6,00</option>
+                    <option value="Fz Mlh do Canto" data-taxa="3.00">📍 FZ: MLH do Canto - R$ 3,00</option>
+                    <option value="Fz Encruzilhada" data-taxa="3.00">📍 FZ: Encruzilhada - R$ 3,00</option>
+                    <option value="Umas" data-taxa="3.00">📍 Úmãs - R$ 3,00</option>
+                    <option value="Retirada no Local" data-taxa="0">📍 Retirar no local - Grátis</option>
+                </select>
+            </div>
+
+            <div class="cart-total">
+                <strong>Subtotal: R$ <span id="cartSubtotal">0,00</span></strong><br>
+                <strong>Taxa Entrega: R$ <span id="cartTaxa">0,00</span></strong><br>
+                <strong style="font-size: 1.3rem; color: #FB5607;">Total: R$ <span id="cartTotal">0,00</span></strong>
+            </div>
+            <button class="btn-finalizar" id="finalizarPedido">
+                <i class="fab fa-whatsapp"></i> Finalizar Pedido no WhatsApp
+            </button>
+        </section>
+
+        <section class="container pix-qr-container">
+            <h3>💳 Pagamento via Pix 💳</h3>
+            <p class="pix">Escaneie o QR Code abaixo para pagar seu pedido via Pix.</p>
+
+            <div class="pix-content">
+                <div class="pix-info">
+                    <p class="pix-chave"><strong>Chave Pix:</strong> 87981004878</p>
+                    <p class="pix-nome"><strong>Nome:</strong> Maria do Socorro da Silva</p>
+                </div>
+                <div class="pix-qr">
+                    <img src="./assets/img/pix-qr.webp" alt="QR Code Pix" class="pix-qr-code">
+                    <p class="pix-nome-qr">Maria do Socorro da Silva</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+
+    <footer>
+        <div class="container">
+            <h4>S.O.S Pizza</h4>
+            <p>🍕 Delivery Emergencial • 18h às 21h 🍕</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="https://wa.me/5587981004878"><i class="fab fa-whatsapp"></i></a>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+            </div>
+            <p>&copy; 2025 S.O.S Pizza - Todos os direitos reservados</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

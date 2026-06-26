@@ -271,14 +271,6 @@ header {
     /* Ajusta a foto sem esticar */
     display: block;
 }
-/* --- Estilo Geral para Desktop (Fora de qualquer @media) --- */
-.menu-item-content {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-}
-/* Controla o posicionamento do container pai das bebidas*/
-
 
 /* Espaçamento interno dos textos e botões abaixo da foto */
 .menu-item-content {
@@ -694,29 +686,3 @@ footer {
         text-align: center;
     }
 }
-
-/*@media (min-width: 375px) {
-
-
-    .cart-sidebar {
-   
-    }
-
-    .logo-text h1 {
-    
-    }
-
-    .hero {
-    
-    }
-
-    .hero h2 {
-      
-    }
-
-    .switch-btn {
-        
-    }
-
-
-}*/

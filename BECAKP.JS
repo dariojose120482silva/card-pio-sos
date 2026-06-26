@@ -1,3 +1,5 @@
+
+
 // ============================================
 // CONFIGURAÇÕES
 // ============================================
@@ -60,12 +62,12 @@ const cardapioMisto = {
         { nome: "PRESUNTO / 2 - QUEIJO", imagem: "assets/img/presunto-x-2queijo.webp", precoG: 38.50, precoM: 28.50 }
     ],
     "Mix 2 - Queijo": [
-        { nome: "2 - QUEIJO / MUSSARELA", imagem: "assets/img/2-queijo-x-mussarela.webp", precoG: 37.00, precoM: 27.00 },
-        { nome: "2 - QUEIJO / CALABRESA", imagem: "assets/img/2-queijo-x-calabresa.webp", precoG: 38.00, precoM: 28.00 },
-        { nome: "2 - QUEIJO / PORTUGUESA", imagem: "assets/img/2-queijo-x-portuguesa.webp", precoG: 40.00, precoM: 30.00 },
-        { nome: "2 - QUEIJO / FRANGO", imagem: "assets/img/2-queijo-x-frango.webp", precoG: 40.00, precoM: 30.00 },
-        { nome: "2 - QUEIJO / BOLONHESA", imagem: "assets/img/2-queijo-x-bolonhesa.webp", precoG: 42.00, precoM: 32.00 },
-        { nome: "2 - QUEIJO / PRESUNTO", imagem: "assets/img/2-queijo-x-presunto.webp", precoG: 38.00, precoM: 28.00 }
+        { nome: "2 - QUEIJO / MUSSARELA", imagem: "assets/img/2queijo-x-mussarela.webp", precoG: 37.00, precoM: 27.00 },
+        { nome: "2 - QUEIJO / CALABRESA", imagem: "assets/img/2queijo-x-calabresa.webp", precoG: 38.00, precoM: 28.00 },
+        { nome: "2 - QUEIJO / PORTUGUESA", imagem: "assets/img/2queijo-x-portuguesa.webp", precoG: 40.00, precoM: 30.00 },
+        { nome: "2 - QUEIJO / FRANGO", imagem: "assets/img/2queijo-x-frango.webp", precoG: 40.00, precoM: 30.00 },
+        { nome: "2 - QUEIJO / BOLONHESA", imagem: "assets/img/2queijo-x-bolonhesa.webp", precoG: 42.00, precoM: 32.00 },
+        { nome: "2 - QUEIJO / PRESUNTO", imagem: "assets/img/2queijo-x-presunto.webp", precoG: 38.00, precoM: 28.00 }
     ]
 };
 
@@ -421,5 +423,3 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof carregarCarrinho === 'function') carregarCarrinho();
     if (typeof initCartControls === 'function') initCartControls();
 });
-
-
