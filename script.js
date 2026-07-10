@@ -299,7 +299,7 @@ function finalizarPedido() {
                 console.log("✅ Token criado com sucesso!", resposta.id);
 
                 // Agora o seu site envia o token para o seu servidor na Vercel
-                fetch('https://card-pio-sos.vercel.app/api/pagamento', {
+                fetch('/api/pagamento', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
