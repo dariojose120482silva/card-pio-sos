@@ -11,6 +11,8 @@ export default async function handler(req, res) {
     }
 
     try {
+
+        console.log('Dados recebidos no servidor:', req.body);
         const { token, transaction_amount, email, payment_method_id, installments } = req.body;
 
         // 2. Cria o objeto de pagamento
