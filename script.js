@@ -312,17 +312,14 @@ function finalizarPedido() {
                 })
                     .then(res => res.json())
                     .then(data => {
-                        console.log("Resposta do servidor:", data);
-                        alert('Pagamento processado com sucesso! S.O.S Pizza agradece.');
-
-                        carrinho = [];
-                        salvarCarrinho();
-                        atualizarInterface();
-                        document.getElementById('cartSidebar').classList.remove('open');
+                        if (data.error) {
+                            alert('Erro do servidor: ' + data.error);
+                        } else {
+                            alert('Pagamento concluído!');
+                        }
                     })
                     .catch(err => {
-                        console.error("Erro no processamento:", err);
-                        alert('Erro ao enviar pagamento para o servidor.');
+                        alert('Erro de conexão: ' + err);
                     });
             }) // <--- AQUI TERMINA A SUBSTITUIÇÃO
             .catch(function (erro) {
