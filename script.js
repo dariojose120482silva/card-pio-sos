@@ -295,18 +295,36 @@ function finalizarPedido() {
             cardExpirationYear: ano,
             securityCode: cvv
         })
-            .then(function (resposta) {
-                console.log("✅ SUCESSO!", resposta.id);
+            .then(function (resposta) { // <--- AQUI COMEÇA A SUBSTITUIÇÃO
+                console.log("✅ Token criado com sucesso!", resposta.id);
 
-                // Aqui a mágica acontece normal na sua tela:
-                alert('💳 Cartão aprovado e validado com sucesso! S.O.S Pizza agradece.');
+                // Agora o seu site envia o token para o seu servidor na Vercel
+                fetch('https://card-pio-sos.vercel.app/api/pagamento', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        token: resposta.id,
+                        transaction_amount: calcularTotal(),
+                        email: 'cliente@exemplo.com',
+                        payment_method_id: 'visa',
+                        installments: 1
+                    })
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log("Resposta do servidor:", data);
+                        alert('Pagamento processado com sucesso! S.O.S Pizza agradece.');
 
-                // Limpa o carrinho e fecha a barra igual no WhatsApp
-                carrinho = [];
-                salvarCarrinho();
-                atualizarInterface();
-                document.getElementById('cartSidebar').classList.remove('open');
-            })
+                        carrinho = [];
+                        salvarCarrinho();
+                        atualizarInterface();
+                        document.getElementById('cartSidebar').classList.remove('open');
+                    })
+                    .catch(err => {
+                        console.error("Erro no processamento:", err);
+                        alert('Erro ao enviar pagamento para o servidor.');
+                    });
+            }) // <--- AQUI TERMINA A SUBSTITUIÇÃO
             .catch(function (erro) {
                 console.error("❌ Erro:", erro);
 
