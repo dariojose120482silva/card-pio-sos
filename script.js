@@ -269,7 +269,7 @@ function finalizarPedido() {
         const numeroCartao = document.getElementById('cardNumber').value.replace(/\s/g, '');
         const nomeCartao = document.getElementById('cardholderName').value;
         const validade = document.getElementById('cardExpiry').value;
-        const cvv = document.getElementById('cvv').value;
+        const cvv = document.getElementById('cvv').value.replace(/\D/g, '');
 
         if (!numeroCartao || !nomeCartao || !validade || !cvv) {
             alert('Por favor, preencha todos os dados do cartão antes de finalizar!');
