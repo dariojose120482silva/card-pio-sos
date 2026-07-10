@@ -1,6 +1,9 @@
 // ============================================
 // CONFIGURAÇÕES
 // ============================================
+const mp = new MercadoPago('APP_USR-73f91a63-8283-4cab-8f18-87d6cb488d11');
+
+
 const numeroWhatsApp = "5587981004878";
 
 
@@ -51,7 +54,7 @@ const cardapioMisto = {
         { nome: "FRANGO / PRESUNTO", imagem: "assets/img/frango-x-presunto.webp", precoG: 40, precoM: 30 },
         { nome: "FRANGO / 2 - QUEIJO", imagem: "assets/img/2-queijo-x-frango.webp", precoG: 40.00, precoM: 30.00 }
     ],
-   "Mix Bolonhesa": [ // Padronizado para 'Mix Bolonhesa'
+    "Mix Bolonhesa": [ // Padronizado para 'Mix Bolonhesa'
         { nome: "BOLONHESA / MUSSARELA", imagem: "assets/img/bolonhesa-x-mussarela.webp", precoG: 40.00, precoM: 30.00 }, // Corrigido precoG
         { nome: "BOLONHESA / CALABRESA", imagem: "assets/img/bolonhesa-x-calabresa.webp", precoG: 41.00, precoM: 31.00 },
         { nome: "BOLONHESA / PORTUGUESA", imagem: "assets/img/bolonhesa-x-portuguesa.webp", precoG: 42.50, precoM: 32.50 },
@@ -202,50 +205,123 @@ function atualizarInterface() {
 
 // Final da interface do carrinho
 
+// Finalizar pedido (abre WhatsApp) ou Mercado Pago
+
 function finalizarPedido() {
     if (carrinho.length === 0) {
         alert('Seu carrinho está vazio! Adicione algumas pizzas.');
         return;
     }
 
-    const select = document.getElementById('bairroSelect');
-    const localizacao = select.options[select.selectedIndex].text;
-    const taxa = getTaxaEntrega();
-    const subtotal = calcularSubtotal();
-    const total = subtotal + taxa;
-
-    let mensagem = "🍕 *S.O.S PIZZA - PEDIDO* 🍕\n\n";
-    mensagem += "*ITENS DO PEDIDO:*\n";
-
-    carrinho.forEach((item, index) => {
-        mensagem += `${index + 1}️⃣ ${item.pizza} (${item.tamanho}) - R$ ${item.preco.toFixed(2).replace('.', ',')}\n`;
-    });
-
-    mensagem += `\n*SUBTOTAL:* R$ ${subtotal.toFixed(2).replace('.', ',')}\n`;
-    mensagem += `*TAXA DE ENTREGA:* R$ ${taxa.toFixed(2).replace('.', ',')}\n`;
-    mensagem += `*TOTAL DO PEDIDO:* R$ ${total.toFixed(2).replace('.', ',')}\n\n`;
-    mensagem += `*LOCALIZAÇÃO:* ${localizacao}\n\n`;
-    mensagem += "*DADOS PARA ENTREGA:*\n";
-    mensagem += "Endereço completo: _Digite aqui_\n";
-    mensagem += "Ponto de referência: _Digite aqui_\n";
-    mensagem += "Forma de pagamento: _Digite aqui_\n\n";
-    mensagem += "🔥 *Pedido via S.O.S Pizza - Delivery 18h às 21h*";
-
-    // Modifiquei o "numeroWhatsApp" para o número direto que estava no seu HTML, 
-    // caso você não tenha essa variável declarada em outro lugar do código.
-    const numero = typeof numeroWhatsApp !== 'undefined' ? numeroWhatsApp : '5587981004878';
-    const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
-    window.open(url, '_blank');
+    const selectPagamento = document.getElementById('pagamentoSelect');
+    const formaPagamento = selectPagamento ? selectPagamento.value : 'whatsapp';
 
     // =========================================================
-    // SOLUÇÃO: LIMPAR O CARRINHO APÓS O ENVIO
+    // CAMINHO A: WHATSAPP
     // =========================================================
-    carrinho = [];          // 1. Limpa a lista no JavaScript
-    salvarCarrinho();       // 2. Salva o carrinho vazio no localStorage
-    atualizarInterface();   // 3. Atualiza os totais e textos na tela para R$ 0,00
+    if (formaPagamento === 'whatsapp') {
+        const select = document.getElementById('bairroSelect');
+        const localizacao = select.options[select.selectedIndex].text;
+        const taxa = getTaxaEntrega();
+        const subtotal = calcularSubtotal();
+        const total = subtotal + taxa;
 
-    // 4. Fecha a barra lateral automaticamente substituindo 'open' por 'close' (ou removendo 'open')
-    document.getElementById('cartSidebar').classList.remove('open');
+        let mensagem = "🍕 *S.O.S PIZZA - PEDIDO* 🍕\n\n";
+        mensagem += "*ITENS DO PEDIDO:*\n";
+
+        carrinho.forEach((item, index) => {
+            mensagem += `${index + 1}️⃣ ${item.pizza} (${item.tamanho}) - R$ ${item.preco.toFixed(2).replace('.', ',')}\n`;
+        });
+
+        mensagem += `\n*SUBTOTAL:* R$ ${subtotal.toFixed(2).replace('.', ',')}\n`;
+        mensagem += `*TAXA DE ENTREGA:* R$ ${taxa.toFixed(2).replace('.', ',')}\n`;
+        mensagem += `*TOTAL DO PEDIDO:* R$ ${total.toFixed(2).replace('.', ',')}\n\n`;
+        mensagem += `*LOCALIZAÇÃO:* ${localizacao}\n\n`;
+        mensagem += "*DADOS PARA ENTREGA:*\n";
+        mensagem += "Endereço completo: _Digite aqui_\n";
+        mensagem += "Ponto de referência: _Digite aqui_\n";
+        mensagem += "Forma de pagamento: _Digite aqui_\n\n";
+        mensagem += "🔥 *Pedido via S.O.S Pizza - Delivery 18h às 21h*";
+
+        const numero = typeof numeroWhatsApp !== 'undefined' ? numeroWhatsApp : '5587981004878';
+        const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
+        window.open(url, '_blank');
+
+        carrinho = [];
+        salvarCarrinho();
+        atualizarInterface();
+
+        document.getElementById('cartSidebar').classList.remove('open');
+    }
+
+    // =========================================================
+    // CAMINHO B: CARTÃO DE CRÉDITO (MERCADO PAGO)
+    // =========================================================
+    else if (formaPagamento === 'cartao') {
+        const formCartao = document.getElementById('secaoCartaoMercadoPago');
+
+        if (formCartao && formCartao.style.display !== 'block') {
+            formCartao.style.display = 'block';
+            alert('Por favor, preencha os dados do cartão de crédito no formulário que apareceu no carrinho.');
+            return;
+        }
+
+        const numeroCartao = document.getElementById('cardNumber').value.replace(/\s/g, '');
+        const nomeCartao = document.getElementById('cardholderName').value;
+        const validade = document.getElementById('cardExpiry').value;
+        const cvv = document.getElementById('cvv').value;
+
+        if (!numeroCartao || !nomeCartao || !validade || !cvv) {
+            alert('Por favor, preencha todos os dados do cartão antes de finalizar!');
+            return;
+        }
+
+        const partesValidade = validade.split('/');
+        if (partesValidade.length !== 2) {
+            alert('Por favor, digite a validade no formato MM/AA (ex: 12/30)');
+            return;
+        }
+
+        const mes = partesValidade[0].trim();
+        const ano = "20" + partesValidade[1].trim();
+
+        console.log("🔄 S.O.S Pizza: Criando token de segurança no Mercado Pago...");
+
+        // 🔴 CORRIGIDO: Agora usando o comando correto da V2 (mp.createCardToken)
+        mp.createCardToken({
+            cardNumber: numeroCartao,
+            cardholderName: nomeCartao,
+            cardExpirationMonth: mes,
+            cardExpirationYear: ano,
+            securityCode: cvv
+        })
+            .then(function (resposta) {
+                console.log("✅ SUCESSO!", resposta.id);
+
+                // Aqui a mágica acontece normal na sua tela:
+                alert('💳 Cartão aprovado e validado com sucesso! S.O.S Pizza agradece.');
+
+                // Limpa o carrinho e fecha a barra igual no WhatsApp
+                carrinho = [];
+                salvarCarrinho();
+                atualizarInterface();
+                document.getElementById('cartSidebar').classList.remove('open');
+            })
+            .catch(function (erro) {
+                console.error("❌ Erro:", erro);
+
+                // Descobre o motivo real que o Mercado Pago mandou
+                let motivoReal = "Erro desconhecido";
+                if (erro && erro.cause && erro.cause[0]) {
+                    motivoReal = erro.cause[0].description; // Pega o motivo da lista do Mercado Pago
+                } else if (erro && erro.message) {
+                    motivoReal = erro.message;
+                }
+
+                // 🔴 AGORA APARECE NA TELA:
+                alert('❌ Não foi possível validar o cartão!\n\nMotivo do Mercado Pago: ' + motivoReal);
+            });
+    }
 }
 
 // RENDERIZAR CARDÁPIO TRADICIONAL
@@ -334,7 +410,7 @@ function renderizarMisto() {
 function renderizarBebidas() {
     const container = document.getElementById('bebidasGrid');
     if (!container) return;
-    
+
     container.innerHTML = cardapioBebidas.map(bebida => `
         <div class="menu-item">
             
@@ -347,13 +423,13 @@ function renderizarBebidas() {
                 
                 <div>
                     ${bebida.tamanhos.map(t => {
-                        const nomeIndividual = `${bebida.nome} (${t.tipo})`;
-                        return `
+        const nomeIndividual = `${bebida.nome} (${t.tipo})`;
+        return `
                             <button class="btn-add" onclick="adicionarAoCarrinho('${nomeIndividual.replace(/'/g, "\\'")}', '${t.tipo}', ${t.preco})">
                                 ${t.tipo} R$ ${t.preco.toFixed(2).replace('.', ',')}
                             </button>
                         `;
-                    }).join('')}
+    }).join('')}
                 </div> </div> </div> `).join('');
 }
 // SWITCH ENTRE CARDÁPIOS

@@ -100,6 +100,42 @@
                 </select>
             </div>
 
+            <!-- ESCOLHA DA FORMA DE PAGAMENTO -->
+            <!-- 
+            <div class="cart-control" style="margin-top: 15px;">
+                <label for="pagamentoSelect" style="display: block; font-weight: bold; margin-bottom: 5px;">Como deseja
+                    pagar?</label>
+                <select id="pagamentoSelect"
+                    style="width: 100%; padding: 10px 40px 10px 10px; border-radius: 5px; border: 1px solid #ccc; background-color: #ede5e5; appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E&quot;); background-repeat: no-repeat; background-position: right 15px center; background-size: 18px;">
+                    <option value="whatsapp">Finalizar no WhatsApp (Dinheiro/Pix na entrega)</option>
+                    <option value="cartao">Cartão de Crédito (Pagamento Online)</option>
+                </select>
+            </div>-->
+
+            <!-- Mensagem para os clientes -->
+            <div class="aviso-pagamento">
+                <p>💳 <strong>Pagamento com cartão de crédito:</strong> Disponível em breve no S.O.S Pizza!</p>
+            </div>
+
+            <!-- FORMULÁRIO DO CARTÃO DO MERCADO PAGO (Inicia escondido) -->
+            <div id="secaoCartaoMercadoPago"
+                style="display: none; margin-top: 20px; padding: 15px; border: 1px solid #e6e6e6; border-radius: 8px; background-color: #e1dbdb;">
+                <h4 style="margin-top: 0; color: #333; margin-bottom: 15px;">💳 Dados do Cartão</h4>
+
+                <input type="text" id="cardNumber" placeholder="Número do Cartão (16 dígitos)"
+                    style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc;">
+
+                <input type="text" id="cardholderName" placeholder="Nome impresso no cartão"
+                    style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc;">
+
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <input type="text" id="cardExpiry" placeholder="MM/AA"
+                        style="width: 50%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                    <input type="text" id="cvv" placeholder="CVV"
+                        style="width: 50%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                </div>
+            </div>
+
             <div class="cart-total">
                 <strong>Subtotal: R$ <span id="cartSubtotal">0,00</span></strong><br>
                 <strong>Taxa Entrega: R$ <span id="cartTaxa">0,00</span></strong><br>
@@ -140,6 +176,9 @@
             <p>&copy; 2025 S.O.S Pizza - Todos os direitos reservados</p>
         </div>
     </footer>
+
+    <!-- Motor do Mercado Pago v2 -->
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
 
     <script src="script.js"></script>
 
