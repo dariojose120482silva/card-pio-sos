@@ -9,38 +9,35 @@ body {
     background: rgb(2, 2, 2);
 }
 
-.main-container {
-
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
 /* HEADER */
-header {
-    background: linear-gradient(135deg, #1a1a2e, #16213e);
-    padding: 20px 0;
-    border-bottom: 4px solid #FB5607;
-}
 
+/* Container principal do Header */
 .header-content {
     display: flex;
-    align-items: center;
-
+    align-items: center; /* Alinha verticalmente no centro */
     gap: 20px;
-    flex-wrap: wrap;
+    padding: 10px;
 }
 
+/* Ajuste da Logo */
 .logo-img img {
-    width: 140px;
-    height: 100px;
+    width: 80px;      /* Tamanho fixo e visível */
+    height: 80px;     /* Mantém o círculo */
+    object-fit: cover;
     border-radius: 50%;
-    transition: 0.3s;
+   
+    flex-shrink: 0;   /* Impede que a logo encolha mesmo se o texto for grande */
 }
 
+/* Ajuste do Texto */
+.logo-text {
+    display: flex;
+    flex-direction: column;
+}
 
 .logo-text h1 {
-    font-size: 3rem;
+    font-size: 2.5rem; /* Diminuí um pouco de 3rem para caber melhor */
+    margin: 0;         /* Remove margens extras que empurram coisas */
     background: linear-gradient(135deg, #FB5607, #FFBE0B);
     -webkit-background-clip: text;
     background-clip: text;
@@ -49,8 +46,18 @@ header {
 
 .logo-text p {
     color: #FFBE0B;
-    text-align: center;
+    margin: 5px 0 0 0; /* Espaçamento controlado entre H1 e P */
+    font-size: 1rem;
 }
+
+.main-container {
+
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+
 
 /* HERO */
 .hero {
@@ -552,6 +559,28 @@ footer {
         width: 100%;
     }
 
+    .header-content {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    
+    }
+
+    
+    .logo-img {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        width: 100%;
+    }
+
+    .logo-img img {
+
+        width: 80px;
+        height: 80px;
+    }
+
     .logo-text h1 {
         display: flex;
         align-items: center;
@@ -559,6 +588,15 @@ footer {
         font-size: 1.8rem;
         margin-top: 0;
         margin-bottom: 5px;
+    }
+
+    .logo-text p {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        max-width: 350px;
+        justify-content: center;
+        font-size: 0.9rem;
     }
 
     .hero {
@@ -654,19 +692,6 @@ footer {
     }
 
 
-    .logo-img {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        width: 100%;
-    }
-
-    .logo-img img {
-
-        width: 200px;
-        height: 140px;
-    }
 
     .pix-qr-container {
         display: flex;
