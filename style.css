@@ -9,24 +9,34 @@ body {
     background: rgb(2, 2, 2);
 }
 
-/* HEADER */
-
-/* Container principal do Header */
+/* /* Container principal do Header */
 .header-content {
     display: flex;
-    align-items: center; /* Alinha verticalmente no centro */
+    flex-direction: column;
+    align-items: center;
     gap: 20px;
-    padding: 10px;
+    padding: 20px;
 }
 
 /* Ajuste da Logo */
 .logo-img img {
-    width: 80px;      /* Tamanho fixo e visível */
-    height: 80px;     /* Mantém o círculo */
+   
+    justify-content: center;
+    align-items: center;
+    width: 150px;
+    height: 150px;
     object-fit: cover;
     border-radius: 50%;
-   
-    flex-shrink: 0;   /* Impede que a logo encolha mesmo se o texto for grande */
+    flex-shrink: 0;
+}
+
+.logo-img {
+  
+
+    width: 150px;
+    height: 150px;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Ajuste do Texto */
@@ -36,8 +46,8 @@ body {
 }
 
 .logo-text h1 {
-    font-size: 2.5rem; /* Diminuí um pouco de 3rem para caber melhor */
-    margin: 0;         /* Remove margens extras que empurram coisas */
+    font-size: 2.5rem;
+    margin: 0;
     background: linear-gradient(135deg, #FB5607, #FFBE0B);
     -webkit-background-clip: text;
     background-clip: text;
@@ -46,9 +56,18 @@ body {
 
 .logo-text p {
     color: #FFBE0B;
-    margin: 5px 0 0 0; /* Espaçamento controlado entre H1 e P */
+    margin: 5px 0 0 0;
     font-size: 1rem;
 }
+
+.logo-text p, h1 {
+    text-align: center;
+}
+
+/* Container principal do Header */
+
+
+
 
 .main-container {
 
