@@ -1,0 +1,257 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin - S.O.S Pizza</title>
+    <style>
+        /* O CSS continua exatamente o mesmo, pois usamos as mesmas classes */
+        body { font-family: 'Inter', sans-serif; background-color: #121414; color: #e2e2e2; margin: 0; padding: 20px; }
+        h1 { color: #ffb59e; text-align: center; margin: 0 0 20px 0; }
+        .tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn { padding: 10px 20px; background: #333535; color: #e2e2e2; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.2s; }
+        .tab-btn.active { background: #ff571a; color: white; }
+        .tab-btn:hover { background: #ff571a; }
+        .section { display: none; background: #1e2020; padding: 20px; border-radius: 12px; border: 1px solid #333535; }
+        .section.active { display: block; }
+        .card { background: #333535; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #ff571a; }
+        .success { color: #16a34a; font-weight: bold; }
+        .danger { color: #ffb4ab; font-weight: bold; }
+        h2 { color: #ffb59e; margin-bottom: 15px; margin-top: 0; }
+        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.85rem; font-weight: bold; }
+        .status-entregue { background: #16a34a; color: white; }
+        .status-preparo { background: #ffc300; color: #121414; }
+        .status-pendente { background: #ff571a; color: white; }
+        .btn-add { background: #16a34a; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 15px; }
+        .btn-add:hover { background: #15803d; }
+        
+        /* Estilos do Modal */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); overflow-y: auto; padding: 20px 10px; }
+        .modal-content { background-color: #1e2020; margin: 0 auto; padding: 25px; border: 2px solid #ff571a; border-radius: 12px; width: 90%; max-width: 500px; max-height: calc(100vh - 100px); overflow-y: auto; box-sizing: border-box; }
+        .modal-content h3 { color: #ffb59e; margin-bottom: 20px; margin-top: 0; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; margin-bottom: 5px; color: #e2e2e2; font-weight: bold; font-size: 0.9rem; }
+        .form-group input, .form-group select { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #333535; background: #333535; color: #e2e2e2; box-sizing: border-box; font-size: 0.95rem; }
+        .btn-save { background: #ff571a; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; font-size: 1rem; }
+        .btn-save:hover { background: #ff4d00; }
+        .btn-close { background: #333535; color: #e2e2e2; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; font-size: 0.95rem; }
+        .btn-close:hover { background: #444646; }
+    </style>
+</head>
+<body>
+
+    <!-- CABEÇALHO SEMÂNTICO -->
+    <header>
+        <h1>🍕 Painel Administrativo S.O.S Pizza</h1>
+        <!-- NAVEGAÇÃO DAS ABAS -->
+    <nav class="tabs" role="tablist">
+        <button class="tab-btn active" role="tab" aria-selected="true" onclick="showTab('financeiro')">💰 Financeiro</button>
+        <button class="tab-btn" role="tab" aria-selected="false" onclick="showTab('pedidos')">📦 Pedidos</button>
+        <button class="tab-btn" role="tab" aria-selected="false" onclick="showTab('insumos')">🧀 Insumos</button>
+    </nav>
+    </header>
+    
+    
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main>
+        <!-- SEÇÃO FINANCEIRO -->
+        <section id="financeiro" class="section active" role="tabpanel">
+            <h2>Resumo Financeiro</h2>
+            <button class="btn-add" onclick="openModal('modalFinanceiro')">➕ Novo Lançamento Financeiro</button>
+            <div id="resumo-financeiro">Carregando...</div>
+        </section>
+
+        <!-- SEÇÃO PEDIDOS -->
+        <section id="pedidos" class="section" role="tabpanel">
+            <h2>Últimos Pedidos</h2>
+            <button class="btn-add" onclick="openModal('modalPedido')">➕ Novo Pedido</button>
+            <div id="lista-pedidos">Carregando...</div>
+        </section>
+
+        <!-- SEÇÃO INSUMOS -->
+        <section id="insumos" class="section" role="tabpanel">
+            <h2>Estoque de Insumos</h2>
+            <button class="btn-add" onclick="openModal('modalInsumo')">➕ Novo Insumo</button>
+            <div id="lista-insumos">Carregando...</div>
+        </section>
+    </main>
+
+    <!-- MODAIS (Fora do main, com atributos de acessibilidade) -->
+    
+    <!-- MODAL PEDIDO -->
+    <div id="modalPedido" class="modal" role="dialog" aria-modal="true" aria-labelledby="tituloModalPedido">
+        <div class="modal-content">
+            <h3 id="tituloModalPedido">📦 Novo Pedido</h3>
+            <div class="form-group"><label>Nome do Cliente:</label><input type="text" id="clienteNome" placeholder="Ex: João Silva"></div>
+            <div class="form-group"><label>Telefone:</label><input type="text" id="clienteTelefone" placeholder="(87) 98100-4878"></div>
+            <div class="form-group">
+                <label>Bairro:</label>
+                <select id="clienteBairro">
+                    <option value="Sitio Destino" data-taxa="0" selected> Moro no Sítio Destino - Taxa Grátis</option>
+                    <option value="Sitio Pau de colher" data-taxa="3.00"> Sítio Pau de Colher - R$ 3,00</option>
+                    <option value="Sitio Espinheiro" data-taxa="4.00"> Sítio Espinhos - R$ 4,00</option>
+                    <option value="Sítio Barreiros" data-taxa="5.00"> Sítio Barreiros - R$ 5,00</option>
+                    <option value="FZ Barra" data-taxa="3.00"> FZ: Barra - R$ 3,00</option>
+                    <option value="FZ Racharia" data-taxa="6.00"> FZ: Racharia - R$ 6,00</option>
+                    <option value="Fz Mlh do Canto" data-taxa="3.00"> FZ: MLH do Canto - R$ 3,00</option>
+                    <option value="Fz Encruzilhada" data-taxa="3.00"> FZ: Encruzilhada - R$ 3,00</option>
+                    <option value="Umas" data-taxa="3.00"> Úmãs - R$ 3,00</option>
+                    <option value="Sítio Pedrera" data-taxa="5.00"> Sítio Pedrera - R$ 5,00</option>
+                    <option value="Retirada no Local" data-taxa="0"> Retirar no local - Grátis</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Itens do Pedido:</label><input type="text" id="pedidoItens" placeholder="Ex: 2x Pizza Calabresa"></div>
+            <div class="form-group"><label>Total (R$):</label><input type="number" id="pedidoTotal" placeholder="90.00" step="0.01"></div>
+            <div class="form-group">
+                <label>Status:</label>
+                <select id="pedidoStatus">
+                    <option value="Pendente">Pendente</option>
+                    <option value="Em Preparo">Em Preparo</option>
+                    <option value="Entregue">Entregue</option>
+                </select>
+            </div>
+            <button class="btn-save" onclick="salvarPedidoReal()">💾 Salvar Pedido</button>
+            <button class="btn-close" onclick="closeModal('modalPedido')">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- MODAL INSUMO -->
+    <div id="modalInsumo" class="modal" role="dialog" aria-modal="true" aria-labelledby="tituloModalInsumo">
+        <div class="modal-content">
+            <h3 id="tituloModalInsumo">🧀 Novo Insumo</h3>
+            <div class="form-group"><label>Nome do Insumo:</label><input type="text" id="insumoNome" placeholder="Ex: Queijo Mussarela"></div>
+            <div class="form-group">
+                <label>Categoria:</label>
+                <select id="insumoCategoria">
+                    <option value="Ingrediente">Ingrediente</option>
+                    <option value="Embalagem">Embalagem</option>
+                    <option value="Outros">Outros</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Quantidade:</label><input type="number" id="insumoQuantidade" placeholder="10"></div>
+            <div class="form-group"><label>Unidade:</label><input type="text" id="insumoUnidade" placeholder="Ex: kg, litros, unidades"></div>
+            <div class="form-group"><label>Preço Unitário (R$):</label><input type="number" id="insumoPreco" placeholder="45.00" step="0.01"></div>
+            <div class="form-group"><label>Fornecedor:</label><input type="text" id="insumoFornecedor" placeholder="Ex: Mercado do João"></div>
+            <button class="btn-save" onclick="salvarInsumoReal()">💾 Salvar Insumo</button>
+            <button class="btn-close" onclick="closeModal('modalInsumo')">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- MODAL FINANCEIRO MANUAL -->
+    <div id="modalFinanceiro" class="modal" role="dialog" aria-modal="true" aria-labelledby="tituloModalFinanceiro">
+        <div class="modal-content">
+            <h3 id="tituloModalFinanceiro">💰 Novo Lançamento Financeiro</h3>
+            <div class="form-group">
+                <label>Tipo:</label>
+                <select id="finTipo">
+                    <option value="Saida">Saída (Despesa)</option>
+                    <option value="Entrada">Entrada (Receita)</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Descrição:</label><input type="text" id="finDescricao" placeholder="Ex: Conta de Luz, Venda Avulsa"></div>
+            <div class="form-group"><label>Valor (R$):</label><input type="number" id="finValor" placeholder="150.00" step="0.01"></div>
+            <div class="form-group">
+                <label>Categoria:</label>
+                <select id="finCategoria">
+                    <option value="Outros">Outros</option>
+                    <option value="Venda">Venda Avulsa</option>
+                    <option value="Compra Insumo">Compra de Insumo (Manual)</option>
+                </select>
+            </div>
+            <button class="btn-save" onclick="salvarMovimentacaoFinanceiraReal()">💾 Salvar Lançamento</button>
+            <button class="btn-close" onclick="closeModal('modalFinanceiro')">Cancelar</button>
+        </div>
+    </div>
+
+    <script>
+        // O JavaScript continua exatamente o mesmo, pois os IDs e Classes não mudaram!
+        function showTab(tabId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('active');
+                b.setAttribute('aria-selected', 'false');
+            });
+            document.getElementById(tabId).classList.add('active');
+            
+            const activeBtn = event.target;
+            activeBtn.classList.add('active');
+            activeBtn.setAttribute('aria-selected', 'true');
+        }
+        function openModal(modalId) { document.getElementById(modalId).style.display = 'block'; }
+        function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+
+        async function carregarDadosReais() {
+            try {
+                const resFin = await fetch('/api/financeiro/resumo');
+                const fin = await resFin.json();
+                document.getElementById('resumo-financeiro').innerHTML = `
+                    <div class="card">
+                        <p style="font-size: 1.1rem;">💵 Entradas: <span class="success">R$ ${fin.totalEntradas.toFixed(2)}</span></p>
+                        <p style="font-size: 1.1rem;">💸 Saídas: <span class="danger">R$ ${fin.totalSaidas.toFixed(2)}</span></p>
+                        <hr style="border-color: #555; margin: 15px 0;">
+                        <p style="font-size: 1.3rem;">Saldo: <strong class="${fin.saldo >= 0 ? 'success' : 'danger'}">R$ ${fin.saldo.toFixed(2)}</strong></p>
+                    </div>`;
+
+                const resPed = await fetch('/api/pedidos');
+                const pedidos = await resPed.json();
+                document.getElementById('lista-pedidos').innerHTML = pedidos.length === 0 ? '<p>Nenhum pedido ainda.</p>' : pedidos.map(p => `
+                    <div class="card">
+                        <strong>Pedido #${p._id.slice(-4)}</strong> - ${p.cliente?.nome || 'Cliente'} (${p.cliente?.bairro || 'Bairro'})<br>
+                        Total: <strong>R$ ${p.total.toFixed(2)}</strong> | Status: <span class="status-badge status-${p.status === 'Entregue' ? 'entregue' : p.status === 'Em Preparo' ? 'preparo' : 'pendente'}">${p.status}</span>
+                    </div>`).join('');
+
+                const resIns = await fetch('/api/insumos');
+                const insumos = await resIns.json();
+                document.getElementById('lista-insumos').innerHTML = insumos.length === 0 ? '<p>Nenhum insumo ainda.</p>' : insumos.map(i => `
+                    <div class="card">
+                        <strong>${i.nome}</strong> (${i.categoria})<br>
+                        Qtd: ${i.quantidade} ${i.unidade} | Total: <strong>R$ ${(i.quantidade * i.precoUnitario).toFixed(2)}</strong>
+                    </div>`).join('');
+            } catch (erro) {
+                console.error("Erro ao carregar dados:", erro);
+                document.querySelectorAll('.section').forEach(s => s.innerHTML = '<p class="danger">⚠️ Erro ao conectar com o banco. Verifique se o servidor está rodando.</p>');
+            }
+        }
+
+        async function salvarPedidoReal() {
+            const total = parseFloat(document.getElementById('pedidoTotal').value) || 0;
+            const dados = {
+                cliente: { nome: document.getElementById('clienteNome').value, telefone: document.getElementById('clienteTelefone').value, bairro: document.getElementById('clienteBairro').value },
+                itens: [{ nome: document.getElementById('pedidoItens').value, quantidade: 1, preco: total }],
+                subtotal: total, taxaEntrega: 0, total: total, formaPagamento: 'Manual (Telefone)', status: document.getElementById('pedidoStatus').value
+            };
+            try {
+                const res = await fetch('/api/pedidos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dados) });
+                if (res.ok) {
+                    alert('✅ Pedido salvo no banco de dados e registrado no Financeiro!');
+                    closeModal('modalPedido');
+                    document.getElementById('clienteNome').value = ''; document.getElementById('clienteTelefone').value = ''; document.getElementById('pedidoItens').value = ''; document.getElementById('pedidoTotal').value = '';
+                    carregarDadosReais();
+                } else { alert('❌ Erro ao salvar: ' + (await res.json()).message); }
+            } catch (error) { console.error("Erro de rede:", error); alert('❌ Erro de conexão com o servidor.'); }
+        }
+
+        async function salvarInsumoReal() {
+            const dados = { nome: document.getElementById('insumoNome').value, categoria: document.getElementById('insumoCategoria').value, quantidade: parseFloat(document.getElementById('insumoQuantidade').value) || 0, unidade: document.getElementById('insumoUnidade').value, precoUnitario: parseFloat(document.getElementById('insumoPreco').value) || 0, fornecedor: document.getElementById('insumoFornecedor').value };
+            try {
+                const res = await fetch('/api/insumos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dados) });
+                if (res.ok) { alert('✅ Insumo salvo no banco de dados!'); closeModal('modalInsumo'); carregarDadosReais(); }
+                else { alert('❌ Erro ao salvar: ' + (await res.json()).message); }
+            } catch (error) { console.error("Erro de rede:", error); alert('❌ Erro de conexão com o servidor.'); }
+        }
+
+        async function salvarMovimentacaoFinanceiraReal() {
+            const dados = { tipo: document.getElementById('finTipo').value, descricao: document.getElementById('finDescricao').value, valor: parseFloat(document.getElementById('finValor').value) || 0, categoria: document.getElementById('finCategoria').value };
+            if (!dados.descricao || dados.valor <= 0) { alert('⚠️ Preencha a descrição e um valor válido maior que zero!'); return; }
+            try {
+                const res = await fetch('/api/financeiro', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dados) });
+                if (res.ok) { alert('✅ Lançamento financeiro salvo com sucesso!'); closeModal('modalFinanceiro'); document.getElementById('finDescricao').value = ''; document.getElementById('finValor').value = ''; carregarDadosReais(); }
+                else { alert('❌ Erro ao salvar: ' + (await res.json()).message); }
+            } catch (error) { console.error("Erro de rede:", error); alert('❌ Erro de conexão com o servidor.'); }
+        }
+
+        carregarDadosReais();
+    </script>
+</body>
+</html>

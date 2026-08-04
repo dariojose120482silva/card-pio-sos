@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>S.O.S Pizza - Cardápio Online</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="shortcut icon" href="assets/img/sos-pizza-logo.png" type="image/x-icon">
+
+    <!-- Fontes e Ícones -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Montserrat:wght@700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+
+
+</head>
+
+<body>
+
+    <!-- CABEÇALHO -->
+    <header class="site-header">
+        <div class="container header-inner">
+            <div class="header-brand">
+                <div class="logo-wrapper">
+                    <div class="logo-image-box">
+                        <img alt="S.O.S Pizza Logo" class="logo-img" src="assets/img/sos-logo.png" />
+                    </div>
+                    <div class="logo-badge">
+                        <i class="fas fa-pizza-slice"></i>
+                    </div>
+                </div>
+                <div class="header-text">
+                    <h1 class="site-title">S.O.S <span>Pizza</span></h1>
+                    <p class="site-status">
+                        <span class="status-dot"></span>
+                        Delivery Emergencial • QUA, SÁB e DOM • 18h às 21h
+                    </p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- HERO SECTION -->
+        <section class="hero-section">
+            <div class="container hero-content">
+                <h2 class="hero-title">Escolha suas Pizzas</h2>
+                <p class="hero-description">
+                    Adicione ao carrinho, escolha a localização e finalize o pedido de forma rápida e segura no
+                    WhatsApp.
+                </p>
+            </div>
+        </section>
+
+        <!-- NAVEGAÇÃO DO MENU -->
+        <section class="menu-navigation container">
+            <div class="nav-tabs-wrapper">
+                <button class="switch-btn active" id="btnTradicional">
+                    <i class="fas fa-pizza-slice"></i> Tradicional
+                </button>
+                <button class="switch-btn" id="btnMisto">
+                    <i class="fas fa-arrows-alt-h"></i> Misto
+                </button>
+
+                <button class="switch-btn" id="btnBebidas">
+                    <i class="fas fa-glass-martini-alt"></i> Bebidas
+                </button>
+            </div>
+
+        </section>
+
+        <!-- SEÇÕES DO MENU -->
+        <section class="container menu-container">
+            <!-- TRADICIONAL -->
+            <div class="menu-section active" id="tradicionalSection">
+                <div class="menu-grid" id="tradicionalGrid"></div>
+            </div>
+
+            <!-- MISTO -->
+            <div class="menu-section" id="mistoSection">
+                <div class="misto-tabs" id="mistoTabs"></div>
+                <div class="misto-content" id="mistoContent"></div>
+            </div>
+
+            <!-- BEBIDAS -->
+            <div class="menu-section" id="bebidasSection">
+                <div class="menu-grid" id="bebidasGrid"></div>
+            </div>
+        </section>
+
+
+        <!-- SIDEBAR DO CARRINHO -->
+        <section class="cart-sidebar" id="cartSidebar">
+            <div class="cart-header">
+                <h3><i class="fas fa-shopping-bag"></i> O seu pedido</h3>
+                <button class="close-cart" id="closeCart">&times;</button>
+
+            </div>
+            <div id="cartItems"></div>
+
+            <div class="taxa-container">
+                <label><i class="fas fa-map-marker-alt"></i>
+                    Localização:</label>
+                <select id="bairroSelect" class="taxa-select">
+                    <option value="Sitio Destino" data-taxa="0" selected>📍 Moro no Sítio Destino - Taxa Grátis
+                    </option>
+                    <option value="Sitio Pau de colher" data-taxa="3.00">📍 Sítio Pau de Colher- R$ 3,00</option>
+                    <option value="Sitio Espinheiro" data-taxa="4.00">📍 Sítio Espinhos - R$ 4,00</option>
+                    <option value="Sítio Barreiros" data-taxa="5.00">📍 Sítio Barreiros - R$ 5,00</option>
+                    <option value="FZ Barra" data-taxa="3.00">📍 FZ: Barra - R$ 3,00</option>
+                    <option value="FZ Racharia" data-taxa="6.00">📍 FZ: Racharia - R$ 6,00</option>
+                    <option value="Fz Mlh do Canto" data-taxa="3.00">📍 FZ: MLH do Canto - R$ 3,00</option>
+                    <option value="Fz Encruzilhada" data-taxa="3.00">📍 FZ: Encruzilhada - R$ 3,00</option>
+                    <option value="Umas" data-taxa="3.00">📍 Úmãs - R$ 3,00</option>
+                    <option value="Sítio Pedrera" data-taxa="5.00">📍 Sítio Pedrera - R$ 5,00</option>
+                    <option value="Retirada no Local" data-taxa="0">📍 Retirar no local - Grátis</option>
+                </select>
+            </div>
+
+            <!-- ESCOLHA DA FORMA DE PAGAMENTO -->
+
+            <div class="aviso-pagamento">
+                <p><strong>Atenção:</strong> No momento, aceitamos apenas pagamento na entrega. Em breve,
+                    disponibilizaremos o pagamento com cartão.</p>
+            </div>
+
+            <div class="cart-control">
+                <label for="pagamentoSelect">Como deseja
+                    pagar?</label>
+                <!-- DADOS DO CLIENTE (Adicionar dentro da cart-sidebar) -->
+                <div class="cart-customer-info">
+                    <h4 style="color: #f8fafc; margin: 0 0 10px 0; font-size: 0.95rem;">📍 Dados para Entrega</h4>
+                    <input type="text" id="clienteNome" placeholder="Seu Nome Completo"
+                        style="width: 100%; padding: 10px; margin-bottom: 8px; background: #1e293b; border: 1px solid #334155; color: white; border-radius: 6px;">
+                    <input type="tel" id="clienteTelefone" placeholder="Seu WhatsApp (ex: 87 98100-4878)"
+                        style="width: 100%; padding: 10px; margin-bottom: 8px; background: #1e293b; border: 1px solid #334155; color: white; border-radius: 6px;">
+                    <input type="text" id="clienteEndereco" placeholder="Endereço e Número"
+                        style="width: 100%; padding: 10px; margin-bottom: 8px; background: #1e293b; border: 1px solid #334155; color: white; border-radius: 6px;">
+                    <input type="text" id="clienteReferencia" placeholder="Ponto de Referência (Opcional)"
+                        style="width: 100%; padding: 10px; background: #1e293b; border: 1px solid #334155; color: white; border-radius: 6px;">
+                </div>
+
+                <hr style="border-color: #334155; margin: 15px 0;">
+
+                <!-- Select de Pagamento (já deve existir aí) -->
+                <select id="pagamentoSelect">
+                    <option value="">Selecione a forma de pagamento...</option>
+                    <option value="whatsapp">💵 Dinheiro ou PIX (Enviar no WhatsApp)</option>
+                    <option value="cartao">💳 Cartão de Crédito</option>
+                </select>
+
+            </div>
+
+
+
+            <!-- FORMULÁRIO DO CARTÃO DO MERCADO PAGO (Inicia escondido) -->
+            <!-- FORMULÁRIO DO CARTÃO DO MERCADO PAGO -->
+            <div id="secaoCartaoMercadoPago" class="mp-form-container">
+                <h4 class="mp-title"><i class="fas fa-lock"></i> Pagamento Seguro com Cartão</h4>
+
+                <div class="mp-input-group">
+                    <label for="cardNumber">Número do Cartão</label>
+                    <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19">
+                </div>
+
+                <div class="mp-input-group">
+                    <label for="cardholderName">Nome impresso no cartão</label>
+                    <input type="text" id="cardholderName" placeholder="Ex: MARIA DA SILVA">
+                </div>
+
+                <!-- CAMPO FALTANTE ADICIONADO: CPF -->
+                <div class="mp-input-group">
+                    <label for="payerDoc">CPF do Titular <span style="color: #ff571a;">*</span></label>
+                    <input type="text" id="payerDoc" placeholder="000.000.000-00" maxlength="14">
+                </div>
+
+                <div class="mp-row">
+                    <div class="mp-input-group">
+                        <label for="cardExpiry">Validade</label>
+                        <input type="text" id="cardExpiry" placeholder="MM/AA" maxlength="5">
+                    </div>
+                    <div class="mp-input-group">
+                        <label for="cvv">CVV</label>
+                        <input type="text" id="cvv" placeholder="123" maxlength="4">
+                    </div>
+                </div>
+
+                <!-- CAMPO EXTRA PROFISSIONAL: Parcelas -->
+                <div class="mp-input-group">
+                    <label for="installments">Parcelamento</label>
+                    <select id="installments" class="mp-select">
+                        <option value="1">1x sem juros</option>
+                        <option value="2">2x sem juros</option>
+                        <option value="3">3x sem juros</option>
+                    </select>
+                </div>
+
+
+            </div>
+
+            <div class="cart-total">
+                <strong>Subtotal: R$ <span id="cartSubtotal">0,00</span></strong><br>
+                <strong>Taxa Entrega: R$ <span id="cartTaxa">0,00</span></strong><br>
+                <strong style="font-size: 1.3rem; color: #FB5607;">Total: R$ <span id="cartTotal">0,00</span></strong>
+            </div>
+
+            <button class="btn-finalizar" id="finalizarPedido">
+                <i class="fab fa-whatsapp"></i> Finalizar Pedido
+            </button>
+
+        </section>
+
+
+
+
+        <!-- SEÇÃO PIX -->
+        <section class="pix-section container">
+            <div class="pix-card">
+                <div class="pix-header">
+                    <h3 class="pix-title">💳 Pagamento via Pix 💳</h3>
+                    <p class="pix-subtitle">Agilize seu pedido pagando antecipado</p>
+                </div>
+                <div class="pix-body">
+                    <div class="pix-info">
+                        <div class="pix-info-box">
+                            <p class="pix-label">Chave Pix (WhatsApp)</p>
+                            <p class="pix-value">87 98100 4878</p>
+                        </div>
+                        <div class="pix-info-box">
+                            <p class="pix-label">Titular</p>
+                            <p class="pix-value-lg">Maria do Socorro da Silva</p>
+                        </div>
+                    </div>
+                    <div class="pix-qr-wrap">
+                        <img alt="QR Code Pix" class="pix-qr-code" src="assets/img/pix-qr.webp" />
+                        <p class="pix-qr-name">QR Code -<span>PIX</span></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div class="footer-brand">
+                <div class="footer-logo-box">
+                    <img alt="S.O.S Pizza Logo" class="footer-logo" src="assets/img/sos-logo.png" />
+                </div>
+                <h4 class="footer-title">S.O.S Pizza</h4>
+                <p class="footer-desc">Levando sabor e emergência gastronômica para a sua casa nas melhores noites da
+                    semana.</p>
+            </div>
+
+            <div class="social-links">
+                <a class="social-btn" href="https://www.instagram.com/sospizza_1204darioesocorro/"><i class="fab fa-instagram"></i></a>
+                <a class="social-btn whatsapp" href="https://wa.me/5587981004878"><i class="fab fa-whatsapp"></i></a>
+                <a class="social-btn facebook" href="https://www.facebook.com/sospizza1204darioesocorro"><i class="fab fa-facebook-f"></i></a>
+            </div>
+
+            <div class="footer-copy">
+                <p>© 2025 S.O.S Pizza - Todos os direitos reservados. Design Profissional.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- BOTÃO FLUTUANTE DO CARRINHO -->
+    <button class="cart-toggle" id="cartToggle">
+        <i class="fas fa-shopping-bag"></i>
+        <span class="cart-count" id="cartCount">0</span>
+    </button>
+    <!-- SDK Mercado Pago -->
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+    <!-- Seu Script -->
+    <script src="assets/js/script.js"></script>
+</body>
+
+</html>
