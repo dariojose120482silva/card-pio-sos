@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Admin - S.O.S Pizza</title>
     <style>
-        /* O CSS continua exatamente o mesmo, pois usamos as mesmas classes */
         body { font-family: 'Inter', sans-serif; background-color: #121414; color: #e2e2e2; margin: 0; padding: 20px; }
         h1 { color: #ffb59e; text-align: center; margin: 0 0 20px 0; }
         .tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
@@ -22,10 +21,10 @@
         .status-entregue { background: #16a34a; color: white; }
         .status-preparo { background: #ffc300; color: #121414; }
         .status-pendente { background: #ff571a; color: white; }
+        .status-cancelado { background: #6b7280; color: white; }
         .btn-add { background: #16a34a; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 15px; }
         .btn-add:hover { background: #15803d; }
         
-        /* Estilos do Modal */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); overflow-y: auto; padding: 20px 10px; }
         .modal-content { background-color: #1e2020; margin: 0 auto; padding: 25px; border: 2px solid #ff571a; border-radius: 12px; width: 90%; max-width: 500px; max-height: calc(100vh - 100px); overflow-y: auto; box-sizing: border-box; }
         .modal-content h3 { color: #ffb59e; margin-bottom: 20px; margin-top: 0; }
@@ -36,40 +35,44 @@
         .btn-save:hover { background: #ff4d00; }
         .btn-close { background: #333535; color: #e2e2e2; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; font-size: 0.95rem; }
         .btn-close:hover { background: #444646; }
+        
+        .data-header { background: #ff571a; color: white; padding: 12px 15px; border-radius: 8px; margin: 20px 0 10px 0; font-weight: bold; font-size: 1.1rem; text-align: center; }
+        .data-header:first-child { margin-top: 0; }
+        .total-dia { background: #2d4a2d; color: #16a34a; padding: 10px 15px; border-radius: 8px; margin-bottom: 15px; font-weight: bold; text-align: right; }
+        .pedido-data { color: #ffb59e; font-size: 0.85rem; margin-bottom: 5px; }
+        .insumo-data { color: #ffb59e; font-size: 0.85rem; margin-top: 5px; }
+        
+        .btn-action { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; margin-right: 5px; margin-top: 8px; }
+        .btn-descartar { background: #dc2626; color: white; }
+        .btn-descartar:hover { background: #b91c1c; }
+        .btn-cancelar { background: #6b7280; color: white; }
+        .btn-cancelar:hover { background: #4b5563; }
     </style>
 </head>
 <body>
 
-    <!-- CABEÇALHO SEMÂNTICO -->
     <header>
         <h1>🍕 Painel Administrativo S.O.S Pizza</h1>
-        <!-- NAVEGAÇÃO DAS ABAS -->
     <nav class="tabs" role="tablist">
         <button class="tab-btn active" role="tab" aria-selected="true" onclick="showTab('financeiro')">💰 Financeiro</button>
         <button class="tab-btn" role="tab" aria-selected="false" onclick="showTab('pedidos')">📦 Pedidos</button>
         <button class="tab-btn" role="tab" aria-selected="false" onclick="showTab('insumos')">🧀 Insumos</button>
     </nav>
     </header>
-    
-    
 
-    <!-- CONTEÚDO PRINCIPAL -->
     <main>
-        <!-- SEÇÃO FINANCEIRO -->
         <section id="financeiro" class="section active" role="tabpanel">
             <h2>Resumo Financeiro</h2>
             <button class="btn-add" onclick="openModal('modalFinanceiro')">➕ Novo Lançamento Financeiro</button>
             <div id="resumo-financeiro">Carregando...</div>
         </section>
 
-        <!-- SEÇÃO PEDIDOS -->
         <section id="pedidos" class="section" role="tabpanel">
             <h2>Últimos Pedidos</h2>
             <button class="btn-add" onclick="openModal('modalPedido')">➕ Novo Pedido</button>
             <div id="lista-pedidos">Carregando...</div>
         </section>
 
-        <!-- SEÇÃO INSUMOS -->
         <section id="insumos" class="section" role="tabpanel">
             <h2>Estoque de Insumos</h2>
             <button class="btn-add" onclick="openModal('modalInsumo')">➕ Novo Insumo</button>
@@ -77,9 +80,6 @@
         </section>
     </main>
 
-    <!-- MODAIS (Fora do main, com atributos de acessibilidade) -->
-    
-    <!-- MODAL PEDIDO -->
     <div id="modalPedido" class="modal" role="dialog" aria-modal="true" aria-labelledby="tituloModalPedido">
         <div class="modal-content">
             <h3 id="tituloModalPedido">📦 Novo Pedido</h3>
@@ -90,7 +90,7 @@
                 <select id="clienteBairro">
                     <option value="Sitio Destino" data-taxa="0" selected> Moro no Sítio Destino - Taxa Grátis</option>
                     <option value="Sitio Pau de colher" data-taxa="3.00"> Sítio Pau de Colher - R$ 3,00</option>
-                    <option value="Sitio Espinheiro" data-taxa="4.00"> Sítio Espinhos - R$ 4,00</option>
+                    <option value="Sitio Espinhos" data-taxa="4.00"> Sítio Espinhos - R$ 4,00</option>
                     <option value="Sítio Barreiros" data-taxa="5.00"> Sítio Barreiros - R$ 5,00</option>
                     <option value="FZ Barra" data-taxa="3.00"> FZ: Barra - R$ 3,00</option>
                     <option value="FZ Racharia" data-taxa="6.00"> FZ: Racharia - R$ 6,00</option>
@@ -116,7 +116,6 @@
         </div>
     </div>
 
-    <!-- MODAL INSUMO -->
     <div id="modalInsumo" class="modal" role="dialog" aria-modal="true" aria-labelledby="tituloModalInsumo">
         <div class="modal-content">
             <h3 id="tituloModalInsumo">🧀 Novo Insumo</h3>
@@ -138,7 +137,6 @@
         </div>
     </div>
 
-    <!-- MODAL FINANCEIRO MANUAL -->
     <div id="modalFinanceiro" class="modal" role="dialog" aria-modal="true" aria-labelledby="tituloModalFinanceiro">
         <div class="modal-content">
             <h3 id="tituloModalFinanceiro">💰 Novo Lançamento Financeiro</h3>
@@ -165,7 +163,33 @@
     </div>
 
     <script>
-        // O JavaScript continua exatamente o mesmo, pois os IDs e Classes não mudaram!
+        function formatarData(dataISO) {
+            if (!dataISO) return 'Data não registrada';
+            const data = new Date(dataISO);
+            const dia = String(data.getDate()).padStart(2, '0');
+            const mes = String(data.getMonth() + 1).padStart(2, '0');
+            const ano = data.getFullYear();
+            const hora = String(data.getHours()).padStart(2, '0');
+            const min = String(data.getMinutes()).padStart(2, '0');
+            return `${dia}/${mes}/${ano} às ${hora}:${min}`;
+        }
+        
+        function formatarDataCurta(dataISO) {
+            if (!dataISO) return '';
+            const data = new Date(dataISO);
+            const dias = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+            const dia = String(data.getDate()).padStart(2, '0');
+            const mes = String(data.getMonth() + 1).padStart(2, '0');
+            const ano = data.getFullYear();
+            const diaSemana = dias[data.getDay()];
+            return `${diaSemana}, ${dia}/${mes}/${ano}`;
+        }
+        
+        function extrairData(dataISO) {
+            const data = new Date(dataISO);
+            return data.toISOString().split('T')[0];
+        }
+
         function showTab(tabId) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => {
@@ -181,24 +205,110 @@
         function openModal(modalId) { document.getElementById(modalId).style.display = 'block'; }
         function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
 
+        async function descartarPedido(id) {
+            if (!confirm('⚠️ Tem certeza que deseja DESCARTAR este pedido?\n\nEsta ação é permanente e remove o pedido do banco de dados.')) {
+                return;
+            }
+            try {
+                const res = await fetch(`/api/pedidos/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    alert('✅ Pedido descartado com sucesso!');
+                    carregarDadosReais();
+                } else {
+                    alert('❌ Erro ao descartar pedido: ' + (await res.json()).message);
+                }
+            } catch (error) {
+                console.error("Erro ao descartar:", error);
+                alert('❌ Erro de conexão com o servidor.');
+            }
+        }
+
+        async function cancelarPedido(id) {
+            if (!confirm('Deseja marcar este pedido como CANCELADO?\n\nEle permanecerá no histórico mas não será contabilizado no total.')) {
+                return;
+            }
+            try {
+                const res = await fetch(`/api/pedidos/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'Cancelado' })
+                });
+                if (res.ok) {
+                    alert('✅ Pedido marcado como cancelado!');
+                    carregarDadosReais();
+                } else {
+                    alert('❌ Erro ao cancelar pedido: ' + (await res.json()).message);
+                }
+            } catch (error) {
+                console.error("Erro ao cancelar:", error);
+                alert('❌ Erro de conexão com o servidor.');
+            }
+        }
+
         async function carregarDadosReais() {
             try {
                 const resFin = await fetch('/api/financeiro/resumo');
                 const fin = await resFin.json();
-                document.getElementById('resumo-financeiro').innerHTML = `
+                
+                const resPed = await fetch('/api/pedidos');
+                const todosPedidos = await resPed.json();
+                
+                const hoje = new Date();
+                const dataHoje = formatarDataCurta(hoje.toISOString());
+                
+                const pedidosHoje = todosPedidos.filter(p => extrairData(p.dataPedido) === extrairData(hoje.toISOString()));
+                const totalHoje = pedidosHoje.reduce((sum, p) => sum + p.total, 0);
+                
+                const pedidosPorDia = {};
+                todosPedidos.forEach(p => {
+                    const dia = extrairData(p.dataPedido);
+                    if (!pedidosPorDia[dia]) pedidosPorDia[dia] = [];
+                    pedidosPorDia[dia].push(p);
+                });
+                
+                const diasOrdenados = Object.keys(pedidosPorDia).sort((a, b) => new Date(b) - new Date(a));
+                
+                let htmlFinanceiro = `
+                    <div class="data-header">📅 ${dataHoje}</div>
+                    <div class="total-dia">Total de hoje: R$ ${totalHoje.toFixed(2)} (${pedidosHoje.length} pedidos)</div>
                     <div class="card">
                         <p style="font-size: 1.1rem;">💵 Entradas: <span class="success">R$ ${fin.totalEntradas.toFixed(2)}</span></p>
                         <p style="font-size: 1.1rem;">💸 Saídas: <span class="danger">R$ ${fin.totalSaidas.toFixed(2)}</span></p>
                         <hr style="border-color: #555; margin: 15px 0;">
                         <p style="font-size: 1.3rem;">Saldo: <strong class="${fin.saldo >= 0 ? 'success' : 'danger'}">R$ ${fin.saldo.toFixed(2)}</strong></p>
-                    </div>`;
+                    </div>
+                    <h2 style="margin-top: 30px;">Histórico de Pedidos por Dia</h2>`;
+                
+                diasOrdenados.forEach(dia => {
+                    const pedidosDoDia = pedidosPorDia[dia];
+                    const pedidosValidos = pedidosDoDia.filter(p => p.status !== 'Cancelado');
+                    const totalDia = pedidosValidos.reduce((sum, p) => sum + p.total, 0);
+                    const dataFormatada = formatarDataCurta(dia + 'T00:00:00');
+                    
+                    htmlFinanceiro += `<div class="data-header">${dataFormatada}</div>`;
+                    htmlFinanceiro += `<div class="total-dia">Total do dia: R$ ${totalDia.toFixed(2)} (${pedidosValidos.length} pedidos)</div>`;
+                    
+                    pedidosDoDia.forEach(p => {
+                        htmlFinanceiro += `
+                            <div class="card">
+                                <div class="pedido-data">🕐 ${formatarData(p.dataPedido)}</div>
+                                <strong>Pedido #${p._id.slice(-4)}</strong> - ${p.cliente?.nome || 'Cliente'} (${p.cliente?.bairro || 'Bairro'})<br>
+                                Total: <strong>R$ ${p.total.toFixed(2)}</strong> | Status: <span class="status-badge status-${p.status === 'Entregue' ? 'entregue' : p.status === 'Em Preparo' ? 'preparo' : p.status === 'Cancelado' ? 'cancelado' : 'pendente'}">${p.status}</span>
+                            </div>`;
+                    });
+                });
+                
+                document.getElementById('resumo-financeiro').innerHTML = htmlFinanceiro;
 
-                const resPed = await fetch('/api/pedidos');
-                const pedidos = await resPed.json();
-                document.getElementById('lista-pedidos').innerHTML = pedidos.length === 0 ? '<p>Nenhum pedido ainda.</p>' : pedidos.map(p => `
+                document.getElementById('lista-pedidos').innerHTML = todosPedidos.length === 0 ? '<p>Nenhum pedido ainda.</p>' : todosPedidos.map(p => `
                     <div class="card">
+                        <div class="pedido-data">🕐 ${formatarData(p.dataPedido)}</div>
                         <strong>Pedido #${p._id.slice(-4)}</strong> - ${p.cliente?.nome || 'Cliente'} (${p.cliente?.bairro || 'Bairro'})<br>
-                        Total: <strong>R$ ${p.total.toFixed(2)}</strong> | Status: <span class="status-badge status-${p.status === 'Entregue' ? 'entregue' : p.status === 'Em Preparo' ? 'preparo' : 'pendente'}">${p.status}</span>
+                        Total: <strong>R$ ${p.total.toFixed(2)}</strong> | Status: <span class="status-badge status-${p.status === 'Entregue' ? 'entregue' : p.status === 'Em Preparo' ? 'preparo' : p.status === 'Cancelado' ? 'cancelado' : 'pendente'}">${p.status}</span>
+                        <div style="margin-top: 10px;">
+                            <button class="btn-action btn-cancelar" onclick="cancelarPedido('${p._id}')">❌ Cancelar</button>
+                            <button class="btn-action btn-descartar" onclick="descartarPedido('${p._id}')">🗑️ Descartar</button>
+                        </div>
                     </div>`).join('');
 
                 const resIns = await fetch('/api/insumos');
@@ -207,6 +317,7 @@
                     <div class="card">
                         <strong>${i.nome}</strong> (${i.categoria})<br>
                         Qtd: ${i.quantidade} ${i.unidade} | Total: <strong>R$ ${(i.quantidade * i.precoUnitario).toFixed(2)}</strong>
+                        <div class="insumo-data">📅 Cadastrado em: ${formatarData(i.createdAt)}</div>
                     </div>`).join('');
             } catch (erro) {
                 console.error("Erro ao carregar dados:", erro);
