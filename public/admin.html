@@ -1,22 +1,25 @@
 ﻿<!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Admin - S.O.S Pizza</title>
 
     <link rel="stylesheet" href="assets/css/admin.css">
-    
+
 </head>
+
 <body>
 
     <header>
         <h1>🍕 Painel Administrativo S.O.S Pizza</h1>
-    <nav class="tabs" role="tablist">
-        <button class="tab-btn active" role="tab" aria-selected="true" onclick="showTab('financeiro')">💰 Financeiro</button>
-        <button class="tab-btn" role="tab" aria-selected="false" onclick="showTab('pedidos')">📦 Pedidos</button>
-        <button class="tab-btn" role="tab" aria-selected="false" onclick="showTab('insumos')">🧀 Insumos</button>
-    </nav>
+        <nav class="tabs" role="tablist">
+            <button class="tab-btn active" role="tab" aria-selected="true" onclick="showTab('financeiro')">💰
+                Financeiro</button>
+            <button class="tab-btn" role="tab" aria-selected="false" onclick="showTab('pedidos')">📦 Pedidos</button>
+            <button class="tab-btn" role="tab" aria-selected="false" onclick="showTab('insumos')">🧀 Insumos</button>
+        </nav>
     </header>
 
     <main>
@@ -42,8 +45,10 @@
     <div id="modalPedido" class="modal" role="dialog" aria-modal="true" aria-labelledby="tituloModalPedido">
         <div class="modal-content">
             <h3 id="tituloModalPedido">📦 Novo Pedido</h3>
-            <div class="form-group"><label>Nome do Cliente:</label><input type="text" id="clienteNome" placeholder="Ex: João Silva"></div>
-            <div class="form-group"><label>Telefone:</label><input type="text" id="clienteTelefone" placeholder="(87) 98100-4878"></div>
+            <div class="form-group"><label>Nome do Cliente:</label><input type="text" id="clienteNome"
+                    placeholder="Ex: João Silva"></div>
+            <div class="form-group"><label>Telefone:</label><input type="text" id="clienteTelefone"
+                    placeholder="(87) 98100-4878"></div>
             <div class="form-group">
                 <label>Bairro:</label>
                 <select id="clienteBairro">
@@ -60,8 +65,10 @@
                     <option value="Retirada no Local" data-taxa="0"> Retirar no local - Grátis</option>
                 </select>
             </div>
-            <div class="form-group"><label>Itens do Pedido:</label><input type="text" id="pedidoItens" placeholder="Ex: 2x Pizza Calabresa"></div>
-            <div class="form-group"><label>Total (R$):</label><input type="number" id="pedidoTotal" placeholder="90.00" step="0.01"></div>
+            <div class="form-group"><label>Itens do Pedido:</label><input type="text" id="pedidoItens"
+                    placeholder="Ex: 2x Pizza Calabresa"></div>
+            <div class="form-group"><label>Total (R$):</label><input type="number" id="pedidoTotal" placeholder="90.00"
+                    step="0.01"></div>
             <div class="form-group">
                 <label>Status:</label>
                 <select id="pedidoStatus">
@@ -74,23 +81,33 @@
             <button class="btn-close" onclick="closeModal('modalPedido')">Cancelar</button>
         </div>
     </div>
-
+    <!-- MODAL INSUMO -->
     <div id="modalInsumo" class="modal" role="dialog" aria-modal="true" aria-labelledby="tituloModalInsumo">
         <div class="modal-content">
             <h3 id="tituloModalInsumo">🧀 Novo Insumo</h3>
-            <div class="form-group"><label>Nome do Insumo:</label><input type="text" id="insumoNome" placeholder="Ex: Queijo Mussarela"></div>
+            <div class="form-group"><label>Nome do Insumo:</label><input type="text" id="insumoNome"
+                    placeholder="Ex: Queijo Mussarela"></div>
             <div class="form-group">
                 <label>Categoria:</label>
                 <select id="insumoCategoria">
                     <option value="Ingrediente">Ingrediente</option>
                     <option value="Embalagem">Embalagem</option>
+                    <option value="Bebida">Bebida</option>
+                    <option value="Alimento">Alimento</option>
                     <option value="Outros">Outros</option>
                 </select>
             </div>
-            <div class="form-group"><label>Quantidade:</label><input type="number" id="insumoQuantidade" placeholder="10"></div>
-            <div class="form-group"><label>Unidade:</label><input type="text" id="insumoUnidade" placeholder="Ex: kg, litros, unidades"></div>
-            <div class="form-group"><label>Preço Unitário (R$):</label><input type="number" id="insumoPreco" placeholder="45.00" step="0.01"></div>
-            <div class="form-group"><label>Fornecedor:</label><input type="text" id="insumoFornecedor" placeholder="Ex: Mercado do João"></div>
+            <div class="form-group"><label>Quantidade:</label><input type="number" id="insumoQuantidade"
+                    placeholder="10"></div>
+            <div class="form-group"><label>Unidade:</label><input type="text" id="insumoUnidade"
+                    placeholder="Ex: kg, litros, unidades"></div>
+            <div class="form-group"><label>Preço Unitário (R$):</label><input type="number" id="insumoPreco"
+                    placeholder="45.00" step="0.01"></div>
+            <div class="form-group"><label>Fornecedor:</label><input type="text" id="insumoFornecedor"
+                    placeholder="Ex: Mercado do João"></div>
+            <div class="form-group"><label>Data de Validade:</label><input type="date" id="insumoValidade"></div>
+            <div class="form-group"><label>Estoque Mínimo (alerta de reposição):</label><input type="number"
+                    id="insumoEstoqueMinimo" placeholder="Ex: 5"></div>
             <button class="btn-save" onclick="salvarInsumoReal()">💾 Salvar Insumo</button>
             <button class="btn-close" onclick="closeModal('modalInsumo')">Cancelar</button>
         </div>
@@ -106,8 +123,10 @@
                     <option value="Entrada">Entrada (Receita)</option>
                 </select>
             </div>
-            <div class="form-group"><label>Descrição:</label><input type="text" id="finDescricao" placeholder="Ex: Conta de Luz, Venda Avulsa"></div>
-            <div class="form-group"><label>Valor (R$):</label><input type="number" id="finValor" placeholder="150.00" step="0.01"></div>
+            <div class="form-group"><label>Descrição:</label><input type="text" id="finDescricao"
+                    placeholder="Ex: Conta de Luz, Venda Avulsa"></div>
+            <div class="form-group"><label>Valor (R$):</label><input type="number" id="finValor" placeholder="150.00"
+                    step="0.01"></div>
             <div class="form-group">
                 <label>Categoria:</label>
                 <select id="finCategoria">
@@ -123,4 +142,5 @@
 
     <script src="assets/js/admin.js"></script>
 </body>
+
 </html>
