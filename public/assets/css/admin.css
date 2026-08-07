@@ -1,42 +1,446 @@
-body { font-family: 'Inter', sans-serif; background-color: #121414; color: #e2e2e2; margin: 0; padding: 20px; }
-        h1 { color: #ffb59e; text-align: center; margin: 0 0 20px 0; }
-        .tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .tab-btn { padding: 10px 20px; background: #333535; color: #e2e2e2; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.2s; }
-        .tab-btn.active { background: #ff571a; color: white; }
-        .tab-btn:hover { background: #ff571a; }
-        .section { display: none; background: #1e2020; padding: 20px; border-radius: 12px; border: 1px solid #333535; }
-        .section.active { display: block; }
-        .card { background: #333535; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #ff571a; }
-        .success { color: #16a34a; font-weight: bold; }
-        .danger { color: #ffb4ab; font-weight: bold; }
-        h2 { color: #ffb59e; margin-bottom: 15px; margin-top: 0; }
-        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.85rem; font-weight: bold; }
-        .status-entregue { background: #16a34a; color: white; }
-        .status-preparo { background: #ffc300; color: #121414; }
-        .status-pendente { background: #ff571a; color: white; }
-        .status-cancelado { background: #6b7280; color: white; }
-        .btn-add { background: #16a34a; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 15px; }
-        .btn-add:hover { background: #15803d; }
-        
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); overflow-y: auto; padding: 20px 10px; }
-        .modal-content { background-color: #1e2020; margin: 0 auto; padding: 25px; border: 2px solid #ff571a; border-radius: 12px; width: 90%; max-width: 500px; max-height: calc(100vh - 100px); overflow-y: auto; box-sizing: border-box; }
-        .modal-content h3 { color: #ffb59e; margin-bottom: 20px; margin-top: 0; }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; margin-bottom: 5px; color: #e2e2e2; font-weight: bold; font-size: 0.9rem; }
-        .form-group input, .form-group select { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #333535; background: #333535; color: #e2e2e2; box-sizing: border-box; font-size: 0.95rem; }
-        .btn-save { background: #ff571a; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; font-size: 1rem; }
-        .btn-save:hover { background: #ff4d00; }
-        .btn-close { background: #333535; color: #e2e2e2; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; font-size: 0.95rem; }
-        .btn-close:hover { background: #444646; }
-        
-        .data-header { background: #ff571a; color: white; padding: 12px 15px; border-radius: 8px; margin: 20px 0 10px 0; font-weight: bold; font-size: 1.1rem; text-align: center; }
-        .data-header:first-child { margin-top: 0; }
-        .total-dia { background: #2d4a2d; color: #16a34a; padding: 10px 15px; border-radius: 8px; margin-bottom: 15px; font-weight: bold; text-align: right; }
-        .pedido-data { color: #ffb59e; font-size: 0.85rem; margin-bottom: 5px; }
-        .insumo-data { color: #ffb59e; font-size: 0.85rem; margin-top: 5px; }
-        
-        .btn-action { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; margin-right: 5px; margin-top: 8px; }
-        .btn-descartar { background: #dc2626; color: white; }
-        .btn-descartar:hover { background: #b91c1c; }
-        .btn-cancelar { background: #6b7280; color: white; }
-        .btn-cancelar:hover { background: #4b5563; }
+body {
+        font-family: 'Inter', sans-serif;
+        background-color: #121414;
+        color: #e2e2e2;
+        margin: 0;
+        padding: 20px;
+}
+
+h1 {
+        color: #ffb59e;
+        text-align: center;
+        margin: 0 0 20px 0;
+}
+
+.tabs {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+}
+
+.tab-btn {
+        padding: 10px 20px;
+        background: #333535;
+        color: #e2e2e2;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.2s;
+}
+
+.tab-btn.active {
+        background: #ff571a;
+        color: white;
+}
+
+.tab-btn:hover {
+        background: #ff571a;
+}
+
+.section {
+        display: none;
+        background: #1e2020;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #333535;
+}
+
+.section.active {
+        display: block;
+}
+
+.card {
+        background: #333535;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        border-left: 4px solid #ff571a;
+}
+
+.success {
+        color: #16a34a;
+        font-weight: bold;
+}
+
+.danger {
+        color: #ffb4ab;
+        font-weight: bold;
+}
+
+h2 {
+        color: #ffb59e;
+        margin-bottom: 15px;
+        margin-top: 0;
+}
+
+.status-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: bold;
+}
+
+.status-entregue {
+        background: #16a34a;
+        color: white;
+}
+
+.status-preparo {
+        background: #ffc300;
+        color: #121414;
+}
+
+.status-pendente {
+        background: #ff571a;
+        color: white;
+}
+
+.status-cancelado {
+        background: #6b7280;
+        color: white;
+}
+
+.btn-add {
+        background: #16a34a;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-bottom: 15px;
+}
+
+.btn-add:hover {
+        background: #15803d;
+}
+
+.modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.85);
+        overflow-y: auto;
+        padding: 20px 10px;
+}
+
+.modal-content {
+        background-color: #1e2020;
+        margin: 0 auto;
+        padding: 25px;
+        border: 2px solid #ff571a;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        max-height: calc(100vh - 100px);
+        overflow-y: auto;
+        box-sizing: border-box;
+}
+
+.modal-content h3 {
+        color: #ffb59e;
+        margin-bottom: 20px;
+        margin-top: 0;
+}
+
+.form-group {
+        margin-bottom: 12px;
+}
+
+.form-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: #e2e2e2;
+        font-weight: bold;
+        font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select {
+        width: 100%;
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid #333535;
+        background: #333535;
+        color: #e2e2e2;
+        box-sizing: border-box;
+        font-size: 0.95rem;
+}
+
+.btn-save {
+        background: #ff571a;
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        width: 100%;
+        margin-top: 10px;
+        font-size: 1rem;
+}
+
+.btn-save:hover {
+        background: #ff4d00;
+}
+
+.btn-close {
+        background: #333535;
+        color: #e2e2e2;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        width: 100%;
+        margin-top: 10px;
+        font-size: 0.95rem;
+}
+
+.btn-close:hover {
+        background: #444646;
+}
+
+.data-header {
+        background: #ff571a;
+        color: white;
+        padding: 12px 15px;
+        border-radius: 8px;
+        margin: 20px 0 10px 0;
+        font-weight: bold;
+        font-size: 1.1rem;
+        text-align: center;
+}
+
+.data-header:first-child {
+        margin-top: 0;
+}
+
+.total-dia {
+        background: #2d4a2d;
+        color: #16a34a;
+        padding: 10px 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        font-weight: bold;
+        text-align: right;
+}
+
+.pedido-data {
+        color: #ffb59e;
+        font-size: 0.85rem;
+        margin-bottom: 5px;
+}
+
+.insumo-data {
+        color: #ffb59e;
+        font-size: 0.85rem;
+        margin-top: 5px;
+}
+
+.btn-action {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 0.85rem;
+        margin-right: 5px;
+        margin-top: 8px;
+}
+
+.btn-descartar {
+        background: #dc2626;
+        color: white;
+}
+
+.btn-descartar:hover {
+        background: #b91c1c;
+}
+
+.btn-cancelar {
+        background: #6b7280;
+        color: white;
+}
+
+.btn-cancelar:hover {
+        background: #4b5563;
+}
+
+/* ====== MODAL DE INSUMOS ====== */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+}
+
+.modal.ativo {
+    display: flex;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background: #2d2d2d;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.modal-insumo {
+    max-width: 700px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 2px solid #3a3a3a;
+}
+
+.modal-header h3 {
+    color: #ff571a;
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.btn-fechar {
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: color 0.3s;
+    line-height: 1;
+}
+
+.btn-fechar:hover {
+    color: #ff571a;
+}
+
+/* Formulário */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    padding: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    color: #cccccc;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.form-group input,
+.form-group select {
+    padding: 0.75rem;
+    border: 2px solid #3a3a3a;
+    border-radius: 8px;
+    background: #1a1a1a;
+    color: #ffffff;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #ff571a;
+}
+
+/* Rodapé do Modal com Botões */
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 2px solid #3a3a3a;
+}
+
+/* Botões */
+.btn-salvar,
+.btn-cancelar {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-salvar {
+    background: linear-gradient(135deg, #ff571a, #ff8c42);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(255, 87, 26, 0.4);
+}
+
+.btn-salvar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 87, 26, 0.6);
+}
+
+.btn-cancelar {
+    background: #4a4a4a;
+    color: #ffffff;
+}
+
+.btn-cancelar:hover {
+    background: #5a5a5a;
+    transform: translateY(-2px);
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-footer {
+        flex-direction: column-reverse;
+    }
+    
+    .btn-salvar,
+    .btn-cancelar {
+        width: 100%;
+        justify-content: center;
+    }
+}

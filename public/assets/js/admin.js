@@ -72,6 +72,7 @@ async function cancelarPedido(id) {
     } catch (e) { alert('❌ Erro de conexão.'); }
 }
 
+// ===== Funções de Carregar Dados Reais =====
 async function carregarDadosReais() {
     try {
         const resFin = await fetch('/api/financeiro/resumo');
@@ -137,21 +138,34 @@ async function carregarDadosReais() {
             ? '<p>Nenhum pedido ainda.</p>'
             : todosPedidos.map(p => cardPedido(p, true)).join('');
 
+        
+
         const resIns = await fetch('/api/insumos');
         const insumos = await resIns.json();
+
         document.getElementById('lista-insumos').innerHTML = insumos.length === 0
             ? '<p>Nenhum insumo ainda.</p>'
             : insumos.map(i => `
-                <div class="card">
-                    <strong>${i.nome}</strong> (${i.categoria})<br>
-                    Qtd: ${i.quantidade} ${i.unidade} | Total: <strong>R$ ${(i.quantidade * i.precoUnitario).toFixed(2)}</strong>
-                    <div class="insumo-data">📅 Cadastrado em: ${formatarData(i.dataEntrada)}</div>
+                <div class="card" style="display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 250px;">
+                        <strong>${i.nome}</strong> (${i.categoria})<br>
+                        Qtd: ${i.quantidade} ${i.unidade} | Total: <strong>R$ ${(i.quantidade * i.precoUnitario).toFixed(2)}</strong>
+                        <div class="insumo-data" style="font-size: 0.85rem; color: #aaa; margin-top: 5px;">📅 Cadastrado em: ${formatarData(i.dataEntrada)}</div>
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-shrink: 0;">
+                        <button class="btn-action" onclick="editarInsumo('${i._id || i.id}')" style="background: #ffc107; color: #000; font-weight: bold; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">✏️ Editar</button>
+                        <button class="btn-action" onclick="excluirInsumo('${i._id || i.id}', '${i.nome}')" style="background: #dc3545; color: #fff; font-weight: bold; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">🗑️ Excluir</button>
+                    </div>
                 </div>`).join('');
+
     } catch (erro) {
         console.error("Erro ao carregar dados:", erro);
         document.querySelectorAll('.section').forEach(s => s.innerHTML = '<p class="danger">⚠️ Erro ao conectar com o banco.</p>');
     }
 }
+// ===== Fim da Função Carregar Dados Reais =====
+
+// ===== Funções de Salvar Pedido Real =====
 
 async function salvarPedidoReal() {
     const total = parseFloat(document.getElementById('pedidoTotal').value) || 0;
@@ -174,21 +188,108 @@ async function salvarPedidoReal() {
     } catch (e) { alert('❌ Erro de conexão.'); }
 }
 
-async function salvarInsumoReal() {
+// ===== Funções de Salvar Insumos Real =====
+async function salvarInsumoReal(event) {
+    if (event) event.preventDefault(); // Evita recarregar a página se estiver dentro de <form>
+
+    const id = document.getElementById('insumoId') ? document.getElementById('insumoId').value : '';
+
     const dados = {
         nome: document.getElementById('insumoNome').value,
         categoria: document.getElementById('insumoCategoria').value,
         quantidade: parseFloat(document.getElementById('insumoQuantidade').value) || 0,
         unidade: document.getElementById('insumoUnidade').value,
         precoUnitario: parseFloat(document.getElementById('insumoPreco').value) || 0,
-        fornecedor: document.getElementById('insumoFornecedor').value
+        fornecedor: document.getElementById('insumoFornecedor').value,
+        validade: document.getElementById('insumoValidade') ? document.getElementById('insumoValidade').value : '',
+        minimo: document.getElementById('insumoEstoqueMinimo') ? parseFloat(document.getElementById('insumoEstoqueMinimo').value) : 0
     };
+
     try {
-        const res = await fetch('/api/insumos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dados) });
-        if (res.ok) { alert('✅ Insumo salvo!'); closeModal('modalInsumo'); carregarDadosReais(); }
-        else alert('❌ Erro ao salvar: ' + (await res.json()).message);
-    } catch (e) { alert('❌ Erro de conexão.'); }
+        // Se tiver ID, é edição (PUT). Se não, é criação (POST)
+        const url = id ? `/api/insumos/${id}` : '/api/insumos';
+        const method = id ? 'PUT' : 'POST';
+
+        const res = await fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dados)
+        });
+
+        if (res.ok) {
+            alert(id ? '✅ Insumo atualizado com sucesso!' : '✅ Insumo salvo com sucesso!');
+            closeModal('modalInsumo');
+
+            // Limpar o formulário
+            document.getElementById('insumoNome').value = '';
+            document.getElementById('insumoQuantidade').value = '';
+            document.getElementById('insumoPreco').value = '';
+            document.getElementById('insumoFornecedor').value = '';
+            if (document.getElementById('insumoId')) document.getElementById('insumoId').value = '';
+
+            carregarDadosReais();
+        } else {
+            alert('❌ Erro ao salvar: ' + (await res.json()).message);
+        }
+    } catch (e) {
+        alert('❌ Erro de conexão.');
+    }
 }
+
+// ====== ABRIR MODAL PARA NOVO INSUMO (Limpa os dados) ======
+function abrirNovoInsumo() {
+    document.getElementById('tituloModalInsumo').textContent = '🧀 Novo Insumo';
+    if (document.getElementById('insumoId')) document.getElementById('insumoId').value = '';
+    document.getElementById('insumoNome').value = '';
+    document.getElementById('insumoQuantidade').value = '';
+    document.getElementById('insumoPreco').value = '';
+    document.getElementById('insumoFornecedor').value = '';
+    openModal('modalInsumo');
+}
+
+// ====== EDITAR INSUMO ======
+async function editarInsumo(id) {
+    try {
+        const res = await fetch(`/api/insumos/${id}`);
+        const insumo = await res.json();
+
+        // Preenche o formulário com os dados reais
+        if (document.getElementById('insumoId')) document.getElementById('insumoId').value = insumo._id || insumo.id;
+        document.getElementById('insumoNome').value = insumo.nome;
+        document.getElementById('insumoCategoria').value = insumo.categoria;
+        document.getElementById('insumoQuantidade').value = insumo.quantidade;
+        document.getElementById('insumoUnidade').value = insumo.unidade;
+        document.getElementById('insumoPreco').value = insumo.precoUnitario;
+        document.getElementById('insumoFornecedor').value = insumo.fornecedor || '';
+        if (document.getElementById('insumoValidade')) document.getElementById('insumoValidade').value = insumo.validade || '';
+        if (document.getElementById('insumoEstoqueMinimo')) document.getElementById('insumoEstoqueMinimo').value = insumo.minimo || 0;
+
+        // Muda o título e abre o modal
+        document.getElementById('tituloModalInsumo').textContent = '✏️ Editar Insumo';
+        openModal('modalInsumo');
+    } catch (e) {
+        alert('❌ Erro ao carregar dados do insumo.');
+    }
+}
+
+// ====== EXCLUIR INSUMO ======
+async function excluirInsumo(id, nome) {
+    if (!confirm(`⚠️ Tem certeza que deseja EXCLUIR "${nome}"?\n\nEsta ação é permanente.`)) return;
+    try {
+        const res = await fetch(`/api/insumos/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+            alert('✅ Insumo excluído com sucesso!');
+            carregarDadosReais();
+        } else {
+            alert('❌ Erro ao excluir: ' + (await res.json()).message);
+        }
+    } catch (e) {
+        alert('❌ Erro de conexão.');
+    }
+}
+//===== Funções de Salvar Insumos Real Final =====
+
+// ===== Funções de Financeiro Real =====
 
 async function salvarMovimentacaoFinanceiraReal() {
     const dados = {
