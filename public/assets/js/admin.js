@@ -138,7 +138,7 @@ async function carregarDadosReais() {
             ? '<p>Nenhum pedido ainda.</p>'
             : todosPedidos.map(p => cardPedido(p, true)).join('');
 
-        
+
 
         const resIns = await fetch('/api/insumos');
         const insumos = await resIns.json();
@@ -157,7 +157,33 @@ async function carregarDadosReais() {
                         <button class="btn-action" onclick="excluirInsumo('${i._id || i.id}', '${i.nome}')" style="background: #dc3545; color: #fff; font-weight: bold; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">🗑️ Excluir</button>
                     </div>
                 </div>`).join('');
+        // ===== CARREGAR LISTA DE LANÇAMENTOS FINANCEIROS =====
+        const resFinLista = await fetch('/api/financeiro');
+        const listaFin = await resFinLista.json();
 
+        const containerFin = document.getElementById('lista-lancamentos-fin');
+        if (containerFin) {
+            containerFin.innerHTML = listaFin.length === 0
+                ? '<p style="color: #888; text-align: center; padding: 10px;">Nenhum lançamento registrado.</p>'
+                : listaFin.map(f => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; background: #2d2d2d; border-radius: 6px; border-left: 4px solid ${f.tipo === 'Entrada' ? '#28a745' : '#dc3545'};">
+                        <div>
+                            <strong style="color: #fff;">${f.tipo === 'Entrada' ? '💵' : '💸'} ${f.descricao}</strong> 
+                            <span style="color: #aaa; font-size: 0.85rem;">(${f.categoria || 'Geral'})</span><br>
+                            <small style="color: #888;">${formatarData(f.data)}</small>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <strong style="color: ${f.tipo === 'Entrada' ? '#28a745' : '#dc3545'}; font-size: 1.1rem;">
+                                R$ ${f.valor.toFixed(2)}
+                            </strong>
+                            <button onclick="excluirLancamentoFinanceiro('${f._id}')" 
+                                style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;" title="Excluir">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+        }
     } catch (erro) {
         console.error("Erro ao carregar dados:", erro);
         document.querySelectorAll('.section').forEach(s => s.innerHTML = '<p class="danger">⚠️ Erro ao conectar com o banco.</p>');
@@ -304,6 +330,39 @@ async function salvarMovimentacaoFinanceiraReal() {
         if (res.ok) { alert('✅ Lançamento salvo!'); closeModal('modalFinanceiro'); document.getElementById('finDescricao').value = ''; document.getElementById('finValor').value = ''; carregarDadosReais(); }
         else alert('❌ Erro ao salvar: ' + (await res.json()).message);
     } catch (e) { alert('❌ Erro de conexão.'); }
+}
+
+// ====== MOSTRAR / OCULTAR HISTÓRICO FINANCEIRO ======
+function toggleHistoricoFinanceiro() {
+    const container = document.getElementById('container-historico-fin');
+    const btn = event.target;
+
+    if (container.style.display === 'none' || container.style.display === '') {
+        container.style.display = 'block';
+        btn.innerHTML = '🔼 Ocultar Histórico';
+        btn.style.background = '#495057';
+    } else {
+        container.style.display = 'none';
+        btn.innerHTML = '📜 Ver Histórico Detalhado de Lançamentos';
+        btn.style.background = '#6c757d';
+    }
+}
+
+// ====== EXCLUIR LANÇAMENTO FINANCEIRO ======
+async function excluirLancamentoFinanceiro(id) {
+    if (!confirm('⚠️ Tem certeza que deseja EXCLUIR este lançamento?\n\nO saldo será recalculado automaticamente.')) return;
+
+    try {
+        const res = await fetch(`/api/financeiro/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+            alert('✅ Lançamento excluído com sucesso!');
+            carregarDadosReais();
+        } else {
+            alert('❌ Erro ao excluir: ' + (await res.json()).message);
+        }
+    } catch (e) {
+        alert('❌ Erro de conexão.');
+    }
 }
 
 carregarDadosReais();
