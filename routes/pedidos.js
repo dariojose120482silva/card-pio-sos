@@ -49,10 +49,32 @@ router.patch('/:id', async (req, res) => {
 });
 
 // Deletar pedido
+// Deletar pedido (e remover do financeiro)
 router.delete('/:id', async (req, res) => {
     try {
-        await Pedido.findByIdAndDelete(req.params.id);
-        res.json({ message: 'Pedido deletado com sucesso' });
+        const pedidoId = req.params.id;
+        
+        // 1. Busca o pedido antes de deletar para saber o valor e a descrição
+        const pedido = await Pedido.findById(pedidoId);
+        
+        if (!pedido) {
+            return res.status(404).json({ message: 'Pedido não encontrado' });
+        }
+
+        // 2. Deleta o pedido do banco
+        await Pedido.findByIdAndDelete(pedidoId);
+
+        // 3. Deleta o registro financeiro (Entrada) que foi criado junto com este pedido
+        // Ele busca pela descrição exata que foi salva no momento da criação
+        const descricaoParaDeletar = 'Pedido #' + pedidoId.toString().slice(-4);
+        
+        await Movimentacao.deleteOne({
+            tipo: 'Entrada',
+            descricao: descricaoParaDeletar,
+            valor: pedido.total
+        });
+
+        res.json({ message: 'Pedido e registro financeiro deletados com sucesso' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
