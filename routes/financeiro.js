@@ -63,4 +63,16 @@ router.post('/', async (req, res) => {
   }
 });
 
-module.exports = router;
+
+// Deletar um lançamento financeiro
+router.delete('/:id', async (req, res) => {
+  try {
+    await Movimentacao.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Lançamento deletado com sucesso' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+module.exports = router; // (Mantenha essa linha no final)
+

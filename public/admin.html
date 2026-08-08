@@ -27,6 +27,20 @@
             <h2>Resumo Financeiro</h2>
             <button class="btn-add" onclick="openModal('modalFinanceiro')">➕ Novo Lançamento Financeiro</button>
             <div id="resumo-financeiro">Carregando...</div>
+
+            <!-- ✅ Botão que mostra/esconde o histórico -->
+            <button onclick="toggleHistoricoFinanceiro()"
+                style="background: #6c757d; color: white; margin-top: 20px; width: 100%; padding: 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold;">
+                Ver Histórico Detalhado de Lançamentos
+            </button>
+
+            <!-- ✅ Container que começa escondido -->
+            <div id="container-historico-fin"
+                style="display: none; margin-top: 15px; background: #222; padding: 15px; border-radius: 8px; border: 1px solid #444;">
+                <h4 style="color: #ccc; margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 10px;">Últimos
+                    Lançamentos:</h4>
+                <div id="lista-lancamentos-fin"></div>
+            </div>
         </section>
 
         <section id="pedidos" class="section" role="tabpanel">
