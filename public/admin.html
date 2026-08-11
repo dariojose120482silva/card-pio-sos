@@ -56,16 +56,24 @@
         </section>
     </main>
 
+    <!-- MODAL PEDIDO -->
     <div id="modalPedido" class="modal" role="dialog" aria-modal="true" aria-labelledby="tituloModalPedido">
         <div class="modal-content">
             <h3 id="tituloModalPedido">📦 Novo Pedido</h3>
-            <div class="form-group"><label>Nome do Cliente:</label><input type="text" id="clienteNome"
-                    placeholder="Ex: João Silva"></div>
-            <div class="form-group"><label>Telefone:</label><input type="text" id="clienteTelefone"
-                    placeholder="(87) 98100-4878"></div>
+
+            <div class="form-group">
+                <label>Nome do Cliente:</label>
+                <input type="text" id="clienteNome" placeholder="Ex: João Silva">
+            </div>
+
+            <div class="form-group">
+                <label>Telefone:</label>
+                <input type="text" id="clienteTelefone" placeholder="(87) 98100-4878">
+            </div>
+
             <div class="form-group">
                 <label>Bairro:</label>
-                <select id="clienteBairro">
+                <select id="clienteBairro" onchange="calcularTaxaAutomatica()">
                     <option value="Sitio Destino" data-taxa="0" selected> Moro no Sítio Destino - Taxa Grátis</option>
                     <option value="Sitio Pau de colher" data-taxa="3.00"> Sítio Pau de Colher - R$ 3,00</option>
                     <option value="Sitio Espinhos" data-taxa="4.00"> Sítio Espinhos - R$ 4,00</option>
@@ -79,10 +87,30 @@
                     <option value="Retirada no Local" data-taxa="0"> Retirar no local - Grátis</option>
                 </select>
             </div>
-            <div class="form-group"><label>Itens do Pedido:</label><input type="text" id="pedidoItens"
-                    placeholder="Ex: 2x Pizza Calabresa"></div>
-            <div class="form-group"><label>Total (R$):</label><input type="number" id="pedidoTotal" placeholder="90.00"
-                    step="0.01"></div>
+
+            <div class="form-group">
+                <label>Itens do Pedido:</label>
+                <input type="text" id="pedidoItens" placeholder="Ex: 2x Pizza Calabresa G">
+            </div>
+
+            <div class="form-group">
+                <label>Subtotal - Valor das Pizzas (R$):</label>
+                <input type="number" id="pedidoSubtotal" placeholder="90.00" step="0.01"
+                    onchange="calcularTotalAutomatico()">
+            </div>
+
+            <div class="form-group">
+                <label>Taxa de Entrega (R$):</label>
+                <input type="number" id="taxaEntrega" placeholder="0.00" step="0.01" readonly
+                    style="background: #f0f0f0; color: #666;">
+            </div>
+
+            <div class="form-group">
+                <label>Total (R$):</label>
+                <input type="number" id="pedidoTotal" placeholder="0.00" step="0.01" readonly
+                    style="background: #28a745; color: white; font-weight: bold; font-size: 1.2em;">
+            </div>
+
             <div class="form-group">
                 <label>Status:</label>
                 <select id="pedidoStatus">
@@ -91,11 +119,12 @@
                     <option value="Entregue">Entregue</option>
                 </select>
             </div>
-            <button class="btn-save" onclick="salvarPedidoReal()">💾 Salvar Pedido</button>
+
+            <button class="btn-save" onclick="salvarPedidoReal()"> Salvar Pedido</button>
             <button class="btn-close" onclick="closeModal('modalPedido')">Cancelar</button>
         </div>
     </div>
-
+    <!-- MODAL PEDIDO Fim -->
 
     <!-- MODAL INSUMO -->
     <div id="modalInsumo" class="modal" role="dialog" aria-modal="true" aria-labelledby="tituloModalInsumo">

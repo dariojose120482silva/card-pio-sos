@@ -19,6 +19,7 @@ function formatarData(dataISO) {
     return `${dia}/${mes}/${ano} às ${hora}:${min}`;
 }
 
+// ===== Funções de cardPedido =====
 function cardPedido(p, comBotoes = false) {
     const statusClass = p.status === 'Entregue' ? 'entregue' : p.status === 'Em Preparo' ? 'preparo' : p.status === 'Cancelado' ? 'cancelado' : 'pendente';
     const botoes = comBotoes ? `
@@ -26,14 +27,25 @@ function cardPedido(p, comBotoes = false) {
             <button class="btn-action btn-cancelar" onclick="cancelarPedido('${p._id}')">❌ Cancelar</button>
             <button class="btn-action btn-descartar" onclick="descartarPedido('${p._id}')">🗑️ Descartar</button>
         </div>` : '';
+
+    const telefone = p.cliente?.telefone || 'Sem telefone';
+    const itensTexto = p.itens && p.itens.length > 0 ? p.itens.map(i => i.nome).join(', ') : 'Sem descrição';
+
     return `
         <div class="card">
-            <div class="pedido-data">🕐 ${formatarData(p.dataPedido)}</div>
-            <strong>Pedido #${p._id.slice(-4)}</strong> - ${p.cliente?.nome || 'Cliente'} (${p.cliente?.bairro || 'Bairro'})<br>
-            Total: <strong>R$ ${p.total.toFixed(2)}</strong> | Status: <span class="status-badge status-${statusClass}">${p.status}</span>
+            <div class="pedido-data"> ${formatarData(p.dataPedido)}</div>
+            <strong>Pedido #${p._id.slice(-4)}</strong><br>
+            👤 ${p.cliente?.nome || 'Cliente'} |  ${telefone}<br>
+            📍 ${p.cliente?.bairro || 'Bairro'}<br>
+            🍕 ${itensTexto}<br>
+            ${p.subtotal ? `Subtotal: R$ ${p.subtotal.toFixed(2)} | ` : ''}
+            ${p.taxaEntrega ? `Taxa: R$ ${p.taxaEntrega.toFixed(2)} | ` : ''}
+            Total: <strong style="color: #28a745; font-size: 1.2em;">R$ ${p.total.toFixed(2)}</strong><br>
+            Status: <span class="status-badge status-${statusClass}">${p.status}</span>
             ${botoes}
         </div>`;
 }
+//===== Fim das Funções de cardPedido =====
 
 function showTab(tabId) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -192,27 +204,52 @@ async function carregarDadosReais() {
 // ===== Fim da Função Carregar Dados Reais =====
 
 // ===== Funções de Salvar Pedido Real =====
-
 async function salvarPedidoReal() {
-    const total = parseFloat(document.getElementById('pedidoTotal').value) || 0;
+    const subtotal = parseFloat(document.getElementById('pedidoSubtotal').value) || 0;
+    const taxaEntrega = parseFloat(document.getElementById('taxaEntrega').value) || 0;
+    const total = subtotal + taxaEntrega;
+
     const dados = {
-        cliente: { nome: document.getElementById('clienteNome').value, telefone: document.getElementById('clienteTelefone').value, bairro: document.getElementById('clienteBairro').value },
-        itens: [{ nome: document.getElementById('pedidoItens').value, quantidade: 1, preco: total }],
-        subtotal: total, taxaEntrega: 0, total: total, formaPagamento: 'Manual (Telefone)', status: document.getElementById('pedidoStatus').value
+        cliente: {
+            nome: document.getElementById('clienteNome').value,
+            telefone: document.getElementById('clienteTelefone').value,
+            bairro: document.getElementById('clienteBairro').value
+        },
+        itens: [{ nome: document.getElementById('pedidoItens').value, quantidade: 1, preco: subtotal }],
+        subtotal: subtotal,
+        taxaEntrega: taxaEntrega,
+        total: total,
+        formaPagamento: 'Manual (Telefone)',
+        status: document.getElementById('pedidoStatus').value
     };
+
     try {
-        const res = await fetch('/api/pedidos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dados) });
+        const res = await fetch('/api/pedidos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dados)
+        });
+
         if (res.ok) {
-            alert('✅ Pedido salvo e registrado no Financeiro!');
+            alert('✅ Pedido salvo!\nPizza: R$ ' + subtotal.toFixed(2) + '\nTaxa: R$ ' + taxaEntrega.toFixed(2) + '\nTotal: R$ ' + total.toFixed(2));
             closeModal('modalPedido');
             document.getElementById('clienteNome').value = '';
             document.getElementById('clienteTelefone').value = '';
+            document.getElementById('clienteBairro').value = '';
             document.getElementById('pedidoItens').value = '';
+            document.getElementById('pedidoSubtotal').value = '';
+            document.getElementById('taxaEntrega').value = '';
             document.getElementById('pedidoTotal').value = '';
+            document.getElementById('pedidoStatus').value = 'Pendente';
             carregarDadosReais();
-        } else alert('❌ Erro ao salvar: ' + (await res.json()).message);
-    } catch (e) { alert('❌ Erro de conexão.'); }
+        } else {
+            alert('❌ Erro ao salvar: ' + (await res.json()).message);
+        }
+    } catch (e) {
+        alert('❌ Erro de conexão.');
+    }
 }
+// ===== Fim das Funções de Salvar Pedido Real =====
 
 // ===== Funções de Salvar Insumos Real =====
 async function salvarInsumoReal(event) {
@@ -363,6 +400,23 @@ async function excluirLancamentoFinanceiro(id) {
     } catch (e) {
         alert('❌ Erro de conexão.');
     }
+}
+
+// ====== CALCULAR TAXA AUTOMATICAMENTE QUANDO MUDAR O BAIRRO ======
+function calcularTaxaAutomatica() {
+    const bairroSelect = document.getElementById('clienteBairro');
+    const taxaInput = document.getElementById('taxaEntrega');
+    const taxa = parseFloat(bairroSelect.options[bairroSelect.selectedIndex].getAttribute('data-taxa')) || 0;
+    taxaInput.value = taxa.toFixed(2);
+    calcularTotalAutomatico();
+}
+
+// ====== CALCULAR TOTAL (Subtotal + Taxa) ======
+function calcularTotalAutomatico() {
+    const subtotal = parseFloat(document.getElementById('pedidoSubtotal').value) || 0;
+    const taxa = parseFloat(document.getElementById('taxaEntrega').value) || 0;
+    const total = subtotal + taxa;
+    document.getElementById('pedidoTotal').value = total.toFixed(2);
 }
 
 carregarDadosReais();
