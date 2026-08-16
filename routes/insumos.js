@@ -3,7 +3,7 @@ const router = express.Router();
 const Insumo = require('../models/Insumo');
 const Movimentacao = require('../models/Movimentacao');
 
-// Criar novo insumo
+// 1. Criar novo insumo
 router.post('/', async (req, res) => {
     try {
         const insumo = new Insumo(req.body);
@@ -25,7 +25,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Listar insumos
+// 2. Listar todos os insumos
 router.get('/', async (req, res) => {
     try {
         const insumos = await Insumo.find().sort({ dataEntrada: -1 });
@@ -35,21 +35,37 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Atualizar insumo
-router.patch('/:id', async (req, res) => {
+// ✅ 3. NOVA ROTA: Buscar insumo específico por ID (Resolve o "undefined")
+router.get('/:id', async (req, res) => {
+    try {
+        const insumo = await Insumo.findById(req.params.id);
+        if (!insumo) {
+            return res.status(404).json({ message: 'Insumo não encontrado' });
+        }
+        res.json(insumo);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// ✅ 4. ROTA ALTERADA: De PATCH para PUT (Resolve a "Rota não encontrada")
+router.put('/:id', async (req, res) => {
     try {
         const insumo = await Insumo.findByIdAndUpdate(
             req.params.id,
             req.body,
-            { new: true }
+            { new: true, runValidators: true }
         );
+        if (!insumo) {
+            return res.status(404).json({ message: 'Insumo não encontrado' });
+        }
         res.json(insumo);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 });
 
-// Deletar insumo
+// 5. Deletar insumo
 router.delete('/:id', async (req, res) => {
     try {
         await Insumo.findByIdAndDelete(req.params.id);

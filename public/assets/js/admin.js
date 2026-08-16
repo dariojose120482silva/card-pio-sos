@@ -53,13 +53,13 @@ function getPeriodoTexto() {
     const hoje = new Date();
     const inicioSemana = new Date(hoje);
     inicioSemana.setDate(hoje.getDate() - hoje.getDay() + (semanaOffset * 7));
-    
+
     const fimSemana = new Date(inicioSemana);
     fimSemana.setDate(inicioSemana.getDate() + 6);
-    
+
     const inicioStr = `${String(inicioSemana.getDate()).padStart(2, '0')}/${String(inicioSemana.getMonth() + 1).padStart(2, '0')}/${inicioSemana.getFullYear()}`;
     const fimStr = `${String(fimSemana.getDate()).padStart(2, '0')}/${String(fimSemana.getMonth() + 1).padStart(2, '0')}/${fimSemana.getFullYear()}`;
-    
+
     return `Período: ${inicioStr} a ${fimStr}`;
 }
 
@@ -68,11 +68,11 @@ function estaDentroDaSemana(dataPedido) {
     const inicioSemana = new Date(hoje);
     inicioSemana.setDate(hoje.getDate() - hoje.getDay() + (semanaOffset * 7));
     inicioSemana.setHours(0, 0, 0, 0);
-    
+
     const fimSemana = new Date(inicioSemana);
     fimSemana.setDate(inicioSemana.getDate() + 6);
     fimSemana.setHours(23, 59, 59, 999);
-    
+
     const data = new Date(dataPedido);
     return data >= inicioSemana && data <= fimSemana;
 }
@@ -85,10 +85,10 @@ function cardPedido(p, comBotoes = false) {
             <button class="btn-action btn-cancelar" onclick="cancelarPedido('${p._id}')">❌ Cancelar</button>
             <button class="btn-action btn-descartar" onclick="descartarPedido('${p._id}')">🗑️ Descartar</button>
         </div>` : '';
-    
+
     const telefone = p.cliente?.telefone || 'Sem telefone';
     const itensTexto = p.itens && p.itens.length > 0 ? p.itens.map(i => i.nome).join(', ') : 'Sem descrição';
-    
+
     return `
         <div class="card">
             <div class="pedido-data">🕐 ${formatarData(p.dataPedido)}</div>
@@ -161,12 +161,12 @@ async function carregarDadosReais() {
         // Calcula totais da semana selecionada
         let totalEntradasSemana = 0;
         let totalSaidasSemana = 0;
-        
+
         // Soma entradas dos pedidos da semana
         pedidosDaSemana.filter(p => p.status !== 'Cancelado').forEach(p => {
             totalEntradasSemana += p.total;
         });
-        
+
         // Soma saídas do financeiro da semana
         const resFinLista = await fetch('/api/financeiro');
         const listaFin = await resFinLista.json();
@@ -233,9 +233,16 @@ async function carregarDadosReais() {
         const resIns = await fetch('/api/insumos');
         const insumos = await resIns.json();
 
+        // 🔍 DIAGNÓSTICO: Olhe o Console (F12) para ver se o _id está vindo do banco
+        console.log("DADOS BRUTOS DOS INSUMOS:", insumos);
+
         document.getElementById('lista-insumos').innerHTML = insumos.length === 0
             ? '<p>Nenhum insumo ainda.</p>'
-            : insumos.map(i => `
+            : insumos.map(i => {
+                // Forçamos o uso do _id. Se não existir, colocamos um texto de erro para debug
+                const idSeguro = i._id ? i._id : 'SEM_ID';
+
+                return `
                 <div class="card" style="display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap;">
                     <div style="flex: 1; min-width: 250px;">
                         <strong>${i.nome}</strong> (${i.categoria})<br>
@@ -243,10 +250,11 @@ async function carregarDadosReais() {
                         <div class="insumo-data" style="font-size: 0.85rem; color: #aaa; margin-top: 5px;">📅 Cadastrado em: ${formatarData(i.dataEntrada)}</div>
                     </div>
                     <div style="display: flex; gap: 8px; flex-shrink: 0;">
-                        <button class="btn-action" onclick="editarInsumo('${i._id || i.id}')" style="background: #ffc107; color: #000; font-weight: bold; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">✏️ Editar</button>
-                        <button class="btn-action" onclick="excluirInsumo('${i._id || i.id}', '${i.nome}')" style="background: #dc3545; color: #fff; font-weight: bold; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">🗑️ Excluir</button>
+                        <button class="btn-action" onclick="editarInsumo('${idSeguro}')" style="background: #ffc107; color: #000; font-weight: bold; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">✏️ Editar</button>
+                        <button class="btn-action" onclick="excluirInsumo('${idSeguro}', '${i.nome}')" style="background: #dc3545; color: #fff; font-weight: bold; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">🗑️ Excluir</button>
                     </div>
-                </div>`).join('');
+                </div>`;
+            }).join('');
 
         // Carregar lista de lançamentos financeiros
         const containerFin = document.getElementById('lista-lancamentos-fin');
@@ -283,12 +291,12 @@ async function salvarPedidoReal() {
     const subtotal = parseFloat(document.getElementById('pedidoSubtotal').value) || 0;
     const taxaEntrega = parseFloat(document.getElementById('taxaEntrega').value) || 0;
     const total = subtotal + taxaEntrega;
-    
+
     const dados = {
-        cliente: { 
-            nome: document.getElementById('clienteNome').value, 
-            telefone: document.getElementById('clienteTelefone').value, 
-            bairro: document.getElementById('clienteBairro').value 
+        cliente: {
+            nome: document.getElementById('clienteNome').value,
+            telefone: document.getElementById('clienteTelefone').value,
+            bairro: document.getElementById('clienteBairro').value
         },
         itens: [{ nome: document.getElementById('pedidoItens').value, quantidade: 1, preco: subtotal }],
         subtotal: subtotal,
@@ -297,14 +305,14 @@ async function salvarPedidoReal() {
         formaPagamento: 'Manual (Telefone)',
         status: document.getElementById('pedidoStatus').value
     };
-    
+
     try {
-        const res = await fetch('/api/pedidos', { 
-            method: 'POST', 
-            headers: { 'Content-Type': 'application/json' }, 
-            body: JSON.stringify(dados) 
+        const res = await fetch('/api/pedidos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dados)
         });
-        
+
         if (res.ok) {
             alert('✅ Pedido salvo!\nPizza: R$ ' + subtotal.toFixed(2) + '\nTaxa: R$ ' + taxaEntrega.toFixed(2) + '\nTotal: R$ ' + total.toFixed(2));
             closeModal('modalPedido');
@@ -320,8 +328,8 @@ async function salvarPedidoReal() {
         } else {
             alert(' Erro ao salvar: ' + (await res.json()).message);
         }
-    } catch (e) { 
-        alert('❌ Erro de conexão.'); 
+    } catch (e) {
+        alert('❌ Erro de conexão.');
     }
 }
 
@@ -385,21 +393,52 @@ function abrirNovoInsumo() {
 }
 
 async function editarInsumo(id) {
+    // 🛑 TRAVA DE SEGURANÇA: Impede a busca se o ID for "undefined"
+    if (!id || id === 'undefined' || id === 'null' || id === 'SEM_ID') {
+        alert('❌ ERRO: O ID do insumo não foi identificado.\n\nPor favor, aperte Ctrl + F5 para forçar a atualização da página.');
+        console.error('Tentativa de editar com ID inválido:', id);
+        return; // PARA A EXECUÇÃO AQUI
+    }
+
     try {
+        console.log("🔍 Buscando insumo com ID:", id);
         const res = await fetch(`/api/insumos/${id}`);
+
+        if (!res.ok) {
+            throw new Error(`Erro do servidor: ${res.status}`);
+        }
+
         const insumo = await res.json();
-        if (document.getElementById('insumoId')) document.getElementById('insumoId').value = insumo._id || insumo.id;
-        document.getElementById('insumoNome').value = insumo.nome;
-        document.getElementById('insumoCategoria').value = insumo.categoria;
-        document.getElementById('insumoQuantidade').value = insumo.quantidade;
-        document.getElementById('insumoUnidade').value = insumo.unidade;
-        document.getElementById('insumoPreco').value = insumo.precoUnitario;
+        console.log("✅ Insumo carregado com sucesso:", insumo);
+
+        // Preenche o formulário com os dados reais
+        document.getElementById('insumoId').value = insumo._id;
+        document.getElementById('insumoNome').value = insumo.nome || '';
+        document.getElementById('insumoCategoria').value = insumo.categoria || 'Ingrediente';
+        document.getElementById('insumoQuantidade').value = insumo.quantidade || 0;
+        document.getElementById('insumoUnidade').value = insumo.unidade || 'kg';
+        document.getElementById('insumoPreco').value = insumo.precoUnitario || 0;
         document.getElementById('insumoFornecedor').value = insumo.fornecedor || '';
-        if (document.getElementById('insumoValidade')) document.getElementById('insumoValidade').value = insumo.validade || '';
-        if (document.getElementById('insumoEstoqueMinimo')) document.getElementById('insumoEstoqueMinimo').value = insumo.minimo || 0;
+
+        if (document.getElementById('insumoValidade')) {
+            if (insumo.validade) {
+                const dataValidade = new Date(insumo.validade);
+                document.getElementById('insumoValidade').value = dataValidade.toISOString().split('T')[0];
+            } else {
+                document.getElementById('insumoValidade').value = '';
+            }
+        }
+
+        if (document.getElementById('insumoEstoqueMinimo')) {
+            document.getElementById('insumoEstoqueMinimo').value = insumo.minimo || 0;
+        }
+
         document.getElementById('tituloModalInsumo').textContent = '✏️ Editar Insumo';
         openModal('modalInsumo');
-    } catch (e) { alert('❌ Erro ao carregar dados do insumo.'); }
+    } catch (e) {
+        console.error('Erro ao carregar insumo:', e);
+        alert('❌ Erro ao carregar dados do insumo. Verifique o console (F12).');
+    }
 }
 
 async function excluirInsumo(id, nome) {
@@ -449,12 +488,12 @@ async function salvarMovimentacaoFinanceiraReal() {
     if (!dados.descricao || dados.valor <= 0) { alert('⚠️ Preencha descrição e valor válido!'); return; }
     try {
         const res = await fetch('/api/financeiro', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dados) });
-        if (res.ok) { 
-            alert('✅ Lançamento salvo!'); 
-            closeModal('modalFinanceiro'); 
-            document.getElementById('finDescricao').value = ''; 
-            document.getElementById('finValor').value = ''; 
-            carregarDadosReais(); 
+        if (res.ok) {
+            alert('✅ Lançamento salvo!');
+            closeModal('modalFinanceiro');
+            document.getElementById('finDescricao').value = '';
+            document.getElementById('finValor').value = '';
+            carregarDadosReais();
         }
         else alert('❌ Erro ao salvar: ' + (await res.json()).message);
     } catch (e) { alert('❌ Erro de conexão.'); }
