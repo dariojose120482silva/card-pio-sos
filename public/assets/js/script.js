@@ -1,8 +1,166 @@
-// ============================================
-// CONFIGURAÇÕES
-// ============================================
-const mp = new MercadoPago('APP_USR-73f91a63-8283-4cab-8f18-87d6cb488d11');
+// ==========================================
+// 1. CONFIGURAÇÃO DO MERCADO PAGO (FRONTEND)
+// ==========================================
+const PUBLIC_KEY = 'APP_USR-73f91a63-8283-4cab-8f18-87d6cb488d11'; 
+mp = new MercadoPago(PUBLIC_KEY, { locale: 'pt-BR' });
 const numeroWhatsApp = "5587981004878";
+
+// ==========================================
+// 2. CONTROLES DE UI E MÁSCARAS
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    const pagamentoSelect = document.getElementById('pagamentoSelect');
+    const secaoCartao = document.getElementById('secaoCartaoMercadoPago');
+    const payerDocInput = document.getElementById('payerDoc');
+
+    // Mostrar/Esconder formulário de cartão
+    if (pagamentoSelect && secaoCartao) {
+        pagamentoSelect.addEventListener('change', function() {
+            secaoCartao.style.display = this.value === 'cartao' ? 'block' : 'none';
+        });
+    }
+
+    // Máscara de CPF
+    if (payerDocInput) {
+        payerDocInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length <= 11) {
+                value = value.replace(/(\d{3})(\d)/, '$1.$2')
+                             .replace(/(\d{3})(\d)/, '$1.$2')
+                             .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                e.target.value = value;
+            }
+        });
+    }
+});
+
+// ==========================================
+// 3. LÓGICA UNIFICADA DE FINALIZAR PEDIDO
+// ==========================================
+window.finalizarPedido = async function () {
+    if (carrinho.length === 0) {
+        alert('Seu carrinho está vazio!');
+        return;
+    }
+
+    const formaPagamento = document.getElementById('pagamentoSelect').value;
+    const nome = document.getElementById('clienteNome').value.trim();
+    const telefone = document.getElementById('clienteTelefone').value.trim();
+    const endereco = document.getElementById('clienteEndereco').value.trim();
+    
+    // Validação básica obrigatória
+    if (!nome || !telefone || !endereco) {
+        alert('⚠️ Por favor, preencha Nome, Telefone e Endereço.');
+        return;
+    }
+
+    const subtotal = calcularSubtotal();
+    const taxa = getTaxaEntrega();
+    const total = subtotal + taxa;
+
+    // --- CAMINHO A: WHATSAPP / PIX ---
+    if (formaPagamento === 'whatsapp') {
+        const select = document.getElementById('bairroSelect');
+        const localizacao = select.options[select.selectedIndex].text;
+        const referencia = document.getElementById('clienteReferencia').value.trim();
+
+        const dadosPedido = {
+            cliente: { nome, telefone, endereco: `${endereco}${referencia ? ' (Ref: ' + referencia + ')' : ''}`, bairro: localizacao },
+            itens: carrinho.map(i => ({ nome: i.pizza, quantidade: 1, preco: i.preco })),
+            subtotal, taxa_entrega: taxa, total,
+            forma_pagamento: 'Dinheiro/Pix na Entrega', status: 'Pendente'
+        };
+
+        // Salva no banco silenciosamente
+        fetch('/api/pedidos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dadosPedido) })
+            .catch(err => console.error("Erro ao salvar no banco:", err));
+
+        // Monta mensagem WhatsApp
+        let msg = `🍕 *S.O.S PIZZA - NOVO PEDIDO*\n\n👤 *CLIENTE:* ${nome}\n *TELEFONE:* ${telefone}\n *ENDEREÇO:* ${endereco}\n`;
+        if (referencia) msg += ` *REFERÊNCIA:* ${referencia}\n`;
+        msg += `🗺️ *BAIRRO:* ${localizacao}\n\n*🛒 ITENS:*\n`;
+        
+        carrinho.forEach((item, idx) => msg += `${idx + 1}️⃣ ${item.pizza} - R$ ${item.preco.toFixed(2).replace('.', ',')}\n`);
+        msg += `\n💵 *SUBTOTAL:* R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+        msg += `\n🛵 *TAXA:* R$ ${taxa.toFixed(2).replace('.', ',')}`;
+        msg += `\n💰 *TOTAL:* R$ ${total.toFixed(2).replace('.', ',')}`;
+        msg += `\n *PAGAMENTO:* Dinheiro/PIX na entrega`;
+
+        window.open(`https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(msg)}`, '_blank');
+        
+        // Limpa tudo após enviar
+        setTimeout(() => {
+            carrinho = []; salvarCarrinho(); atualizarInterface();
+            document.getElementById('cartSidebar').classList.remove('open');
+            ['clienteNome','clienteTelefone','clienteEndereco','clienteReferencia'].forEach(id => document.getElementById(id).value = '');
+        }, 500);
+    } 
+
+    // --- CAMINHO B: CARTÃO DE CRÉDITO ---
+    else if (formaPagamento === 'cartao') {
+        const btn = document.getElementById('finalizarPedido');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+        btn.disabled = true;
+
+        try {
+            // Gera token seguro no frontend
+            const cardToken = await mp.createCardToken({
+                cardNumber: document.getElementById('cardNumber').value.replace(/\s/g, ''),
+                cardExpirationMonth: document.getElementById('cardExpiry').value.split('/')[0],
+                cardExpirationYear: "20" + document.getElementById('cardExpiry').value.split('/')[1],
+                securityCode: document.getElementById('cvv').value,
+                cardholderName: document.getElementById('cardholderName').value.toUpperCase(),
+                identificationType: "CPF",
+                identificationNumber: document.getElementById('payerDoc').value.replace(/\D/g, '')
+            });
+
+            // Envia para o SEU backend
+            const response = await fetch('/api/pagamento', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    token: cardToken.id,
+                    transaction_amount: total,
+                    email: "cliente@sospizza.com", // Adicione campo de email no HTML futuramente
+                    payment_method_id: "master",
+                    installments: parseInt(document.getElementById('installments').value) || 1,
+                    payer_doc: cardToken.cardholder.identification.number
+                })
+            });
+
+            const resultado = await response.json();
+
+            if (response.ok && (resultado.status === 'approved' || resultado.status === 'pending')) {
+                alert('✅ Pagamento Aprovado! ID: ' + resultado.paymentId);
+                
+                // Salva pedido como PAGO no banco
+                fetch('/api/pedidos', { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({
+                        cliente: { nome, telefone, endereco, bairro: document.getElementById('bairroSelect').value },
+                        itens: carrinho.map(i => ({ nome: i.pizza, quantidade: 1, preco: i.preco })),
+                        subtotal, taxa_entrega: taxa, total,
+                        forma_pagamento: 'Cartão de Crédito (MP)', status: 'Pago'
+                    }) 
+                });
+
+                carrinho = []; salvarCarrinho(); atualizarInterface();
+                document.getElementById('cartSidebar').classList.remove('open');
+            } else {
+                alert('❌ Pagamento Recusado: ' + (resultado.error || 'Verifique os dados.'));
+            }
+        } catch (error) {
+            console.error(error);
+            alert('❌ Erro ao processar cartão. Tente novamente.');
+        } finally {
+            btn.innerHTML = '<i class="fab fa-whatsapp"></i> Finalizar Pedido';
+            btn.disabled = false;
+        }
+    } else {
+        alert('Selecione uma forma de pagamento!');
+    }
+};
 
 // CARDÁPIO TRADICIONAL
 const cardapioTradicional = [
@@ -189,106 +347,142 @@ window.atualizarInterface = function () {
 
 // ============================================
 // FUNÇÃO ÚNICA E CORRIGIDA DE FINALIZAR PEDIDO
-// ============================================
-window.finalizarPedido = function () {
+window.finalizarPedido = async function () {
     if (carrinho.length === 0) {
         alert('Seu carrinho está vazio!');
         return;
     }
 
     const formaPagamento = document.getElementById('pagamentoSelect').value;
+    const nome = document.getElementById('clienteNome').value.trim();
+    const telefone = document.getElementById('clienteTelefone').value.trim();
+    const endereco = document.getElementById('clienteEndereco').value.trim();
+    
+    if (!nome || !telefone || !endereco) {
+        alert('️ Por favor, preencha Nome, Telefone e Endereço.');
+        return;
+    }
 
-    // CAMINHO A: WHATSAPP (Dinheiro/PIX)
-    if (formaPagamento === 'whatsapp') {
-        // 1. Capturar dados do cliente
-        const nome = document.getElementById('clienteNome').value.trim();
-        const telefone = document.getElementById('clienteTelefone').value.trim();
-        const endereco = document.getElementById('clienteEndereco').value.trim();
-        const referencia = document.getElementById('clienteReferencia').value.trim();
+    const subtotal = calcularSubtotal();
+    const taxa = getTaxaEntrega();
+    const total = subtotal + taxa;
+
+    // --- CARTÃO DE CRÉDITO ---
+    if (formaPagamento === 'cartao') {
+        const formCartao = document.getElementById('secaoCartaoMercadoPago');
+        
+        // Se o formulário de cartão ESTÁ FECHADO, abre ele
+        if (!formCartao || formCartao.style.display === 'none') {
+            if (formCartao) {
+                formCartao.style.display = 'block';
+                formCartao.scrollIntoView({ behavior: 'smooth' });
+            }
+            return; // PARA AQUI e espera o usuário preencher
+        }
+        
+        // Se o formulário JÁ ESTÁ ABERTO, processa o pagamento!
+        const btn = document.getElementById('finalizarPedido');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+        btn.disabled = true;
+
+        try {
+            // Gerar token do cartão
+            const cardToken = await mp.createCardToken({
+                cardNumber: document.getElementById('cardNumber').value.replace(/\s/g, ''),
+                cardExpirationMonth: document.getElementById('cardExpiry').value.split('/')[0],
+                cardExpirationYear: "20" + document.getElementById('cardExpiry').value.split('/')[1],
+                securityCode: document.getElementById('cvv').value,
+                cardholderName: document.getElementById('cardholderName').value.toUpperCase(),
+                identificationType: "CPF",
+                identificationNumber: document.getElementById('payerDoc').value.replace(/\D/g, '')
+            });
+
+            // Enviar para backend
+            const response = await fetch('/api/pagamento', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    token: cardToken.id,
+                    transaction_amount: total,
+                    email: "cliente@sospizza.com",
+                    payment_method_id: "master",
+                    installments: parseInt(document.getElementById('installments').value) || 1,
+                    payer_doc: cardToken.cardholder.identification.number
+                })
+            });
+
+            const resultado = await response.json();
+
+            if (response.ok && (resultado.status === 'approved' || resultado.status === 'pending')) {
+                alert('✅ Pagamento Aprovado! ID: ' + resultado.paymentId);
+                
+                // Salvar pedido como PAGO
+                fetch('/api/pedidos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        cliente: { nome, telefone, endereco, bairro: 'Cartão' },
+                        itens: carrinho.map(i => ({ nome: i.pizza, quantidade: 1, preco: i.preco })),
+                        subtotal, taxa_entrega: taxa, total,
+                        forma_pagamento: 'Cartão de Crédito (MP)',
+                        status: 'Pago'
+                    })
+                });
+
+                carrinho = [];
+                salvarCarrinho();
+                atualizarInterface();
+                document.getElementById('cartSidebar').classList.remove('open');
+                formCartao.style.display = 'none';
+            } else {
+                alert('❌ Pagamento Recusado: ' + (resultado.error || 'Verifique os dados.'));
+            }
+        } catch (error) {
+            console.error(error);
+            alert('❌ Erro ao processar cartão.');
+        } finally {
+            btn.innerHTML = '<i class="fab fa-whatsapp"></i> Finalizar Pedido';
+            btn.disabled = false;
+        }
+    } 
+    
+    // --- WHATSAPP / PIX ---
+    else {
+        // ... (mantém sua lógica atual do WhatsApp)
         const select = document.getElementById('bairroSelect');
         const localizacao = select.options[select.selectedIndex].text;
-        const taxa = getTaxaEntrega();
-        const subtotal = calcularSubtotal();
-        const total = subtotal + taxa;
+        const referencia = document.getElementById('clienteReferencia').value.trim();
 
-        // 2. Validação: Impedir envio se faltar dados cruciais
-        if (!nome || !telefone || !endereco) {
-            alert('⚠️ Por favor, preencha seu Nome, Telefone e Endereço para que possamos entregar seu pedido!');
-            return; // PARA A EXECUÇÃO AQUI
-        }
-
-        // 3. Montar o objeto EXATO que o banco de dados (MongoDB) espera
         const dadosPedido = {
-            cliente: {
-                nome: nome,
-                telefone: telefone,
-                endereco: `${endereco}${referencia ? ' (Ref: ' + referencia + ')' : ''}`,
-                bairro: localizacao
-            },
+            cliente: { nome, telefone, endereco: `${endereco}${referencia ? ' (Ref: ' + referencia + ')' : ''}`, bairro: localizacao },
             itens: carrinho.map(i => ({ nome: i.pizza, quantidade: 1, preco: i.preco })),
-            subtotal: subtotal,
-            taxa_entrega: taxa,
-            total: total,
+            subtotal, taxa_entrega: taxa, total,
             forma_pagamento: 'Dinheiro/Pix na Entrega',
             status: 'Pendente'
         };
 
-        // 4. Enviar silenciosamente para o Banco de Dados
-        fetch('/api/pedidos', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(dadosPedido)
-        }).catch(err => console.error("Erro ao salvar no banco:", err));
+        fetch('/api/pedidos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dadosPedido) })
+            .catch(err => console.error("Erro ao salvar:", err));
 
-        // 5. Montar a mensagem do WhatsApp já com TUDO preenchido
-        let mensagem = "🍕 *S.O.S PIZZA - NOVO PEDIDO* 🍕\n\n";
-        mensagem += `👤 *CLIENTE:* ${nome}\n`;
-        mensagem += `📱 *TELEFONE:* ${telefone}\n`;
-        mensagem += `📍 *ENDEREÇO:* ${endereco}\n`;
-        if (referencia) mensagem += `🏠 *REFERÊNCIA:* ${referencia}\n`;
-        mensagem += `🗺️ *BAIRRO:* ${localizacao}\n\n`;
+        let msg = `🍕 *S.O.S PIZZA*\n\n👤 *Cliente:* ${nome}\n📱 *Tel:* ${telefone}\n📍 *End:* ${endereco}\n`;
+        if (referencia) msg += `🏠 *Ref:* ${referencia}\n`;
+        msg += `🗺️ *Bairro:* ${localizacao}\n\n*🛒 ITENS:*\n`;
+        
+        carrinho.forEach((item, idx) => msg += `${idx + 1}️⃣ ${item.pizza} - R$ ${item.preco.toFixed(2).replace('.', ',')}\n`);
+        msg += `\n💵 *SUBTOTAL:* R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+        msg += `\n🛵 *TAXA:* R$ ${taxa.toFixed(2).replace('.', ',')}`;
+        msg += `\n💰 *TOTAL:* R$ ${total.toFixed(2).replace('.', ',')}`;
+        msg += `\n *PAGAMENTO:* Dinheiro/PIX na entrega`;
 
-        mensagem += "*🛒 ITENS DO PEDIDO:*\n";
-        carrinho.forEach((item, idx) => {
-            mensagem += `${idx + 1}️⃣ ${item.pizza} - R$ ${item.preco.toFixed(2).replace('.', ',')}\n`;
-        });
-
-        mensagem += `\n💵 *SUBTOTAL:* R$ ${subtotal.toFixed(2).replace('.', ',')}`;
-        mensagem += `\n🛵 *TAXA DE ENTREGA:* R$ ${taxa.toFixed(2).replace('.', ',')}`;
-        mensagem += `\n💰 *TOTAL A PAGAR:* R$ ${total.toFixed(2).replace('.', ',')}`;
-        mensagem += `\n💳 *FORMA DE PAGAMENTO:* Dinheiro/PIX na entrega`;
-
-        // 6. Abrir o WhatsApp e limpar o carrinho
+        window.open(`https://wa.me/5587981004878?text=${encodeURIComponent(msg)}`, '_blank');
+        
         setTimeout(() => {
-            window.open(`https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`, '_blank');
-            carrinho = [];
-            salvarCarrinho();
-            atualizarInterface();
+            carrinho = []; salvarCarrinho(); atualizarInterface();
             document.getElementById('cartSidebar').classList.remove('open');
-
-            // Opcional: Limpar os campos do formulário após o envio
-            document.getElementById('clienteNome').value = '';
-            document.getElementById('clienteTelefone').value = '';
-            document.getElementById('clienteEndereco').value = '';
-            document.getElementById('clienteReferencia').value = '';
         }, 500);
     }
-
-    // CAMINHO B: CARTÃO (Abre formulário MP)
-    else if (formaPagamento === 'cartao') {
-        const formCartao = document.getElementById('secaoCartaoMercadoPago');
-        if (formCartao) {
-            formCartao.style.display = 'block';
-            document.getElementById('valorTotalCartao').innerText = calcularTotal().toFixed(2).replace('.', ',');
-            formCartao.scrollIntoView({ behavior: 'smooth' });
-            alert('Formulário de cartão aberto! Preencha os dados e clique em "Pagar".');
-        }
-    }
-
-    else {
-        alert('Selecione uma forma de pagamento!');
-    }
 }
+// =====FIM DA FUNÇÃO FINALIZAR PEDIDO=====
 
 // RENDERIZAR CARDÁPIO TRADICIONAL
 function renderizarTradicional() {
