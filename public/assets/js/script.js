@@ -175,51 +175,45 @@ const cardapioTradicional = [
 // CARDÁPIO MISTO (Meio a Meio)
 const cardapioMisto = {
     "Mix Mussarela": [
-        { nome: "MUSSARELA / CALABRESA", precoG: 38, precoM: 28, imagem: "assets/img/mussarela-x-calabresa.webp" },
-        { nome: "MUSSARELA / PORTUGUESA", imagem: "assets/img/mussarela-x-portuguesa.webp", precoG: 39.50, precoM: 29.50 },
-        { nome: "MUSSARELA / FRANGO", imagem: "assets/img/mussarela-x-frango.webp", precoG: 39.50, precoM: 29.50 },
-        { nome: "MUSSARELA / BOLONHESA", imagem: "assets/img/mussarela-x-bolonhesa.webp", precoG: 41, precoM: 31 },
-        { nome: "MUSSARELA / PRESUNTO", imagem: "assets/img/mussarela-x-presunto.webp", precoG: 37.50, precoM: 27.50 },
+        { nome: "MUSSARELA / CALABRESA", precoG: 38.00, precoM: 28.00, imagem: "assets/img/mussarela-x-calabresa.webp" },
+        { nome: "MUSSARELA / PORTUGUESA", imagem: "assets/img/mussarela-x-portuguesa.webp", precoG: 40.00, precoM: 30.00 },
+        { nome: "MUSSARELA / FRANGO", imagem: "assets/img/mussarela-x-frango.webp", precoG: 40.00, precoM: 30.00 },
+        { nome: "MUSSARELA / PRESUNTO", imagem: "assets/img/mussarela-x-presunto.webp", precoG: 38.00, precoM: 28.00 },
         { nome: "MUSSARELA / 2 - QUEIJO", imagem: "assets/img/2-queijo-x-mussarela.webp", precoG: 38.00, precoM: 28.00 }
     ],
     "Mix Calabresa": [
-        { nome: "CALABRESA / MUSSARELA", imagem: "assets/img/calabresa-x-mussarela.webp", precoG: 38, precoM: 28 },
-        { nome: "CALABRESA / PORTUGUESA", imagem: "assets/img/calabresa-x-portuguesa.webp", precoG: 40.50, precoM: 30.50 },
-        { nome: "CALABRESA / FRANGO", imagem: "assets/img/calabresa-x-frango.webp", precoG: 40.50, precoM: 30.50 },
-        { nome: "CALABRESA / BOLONHESA", imagem: "assets/img/calabresa-x-bolonhesa.webp", precoG: 42, precoM: 32 },
-        { nome: "CALABRESA / PRESUNTO", imagem: "assets/img/calabresa-x-presunto.webp", precoG: 38.50, precoM: 28.50 },
+        { nome: "CALABRESA / MUSSARELA", imagem: "assets/img/calabresa-x-mussarela.webp", precoG: 38.00, precoM: 28.00 },
+        { nome: "CALABRESA / PORTUGUESA", imagem: "assets/img/calabresa-x-portuguesa.webp", precoG: 41.00, precoM: 31.00 },
+        { nome: "CALABRESA / FRANGO", imagem: "assets/img/calabresa-x-frango.webp", precoG: 41.00, precoM: 31.00 },
+        { nome: "CALABRESA / PRESUNTO", imagem: "assets/img/calabresa-x-presunto.webp", precoG: 39.00, precoM: 29.00 },
         { nome: "CALABRESA / 2 - QUEIJO", imagem: "assets/img/2-queijo-x-calabresa.webp", precoG: 38.00, precoM: 28.00 }
     ],
     "Mix Portuguesa": [
-        { nome: "PORTUGUESA / MUSSARELA", imagem: "assets/img/portuguesa-x-mussarela.webp", precoG: 39.50, precoM: 29.50 },
-        { nome: "PORTUGUESA / CALABRESA", imagem: "assets/img/portuguesa-x-calabresa.webp", precoG: 40.50, precoM: 30.50 },
-        { nome: "PORTUGUESA / FRANGO", imagem: "assets/img/portuguesa-x-frango.webp", precoG: 42, precoM: 32 },
-        { nome: "PORTUGUESA / BOLONHESA", imagem: "assets/img/portuguesa-x-bolonhesa.webp", precoG: 43.50, precoM: 33.50 },
-        { nome: "PORTUGUESA / PRESUNTO", imagem: "assets/img/portuguesa-x-presunto.webp", precoG: 40, precoM: 30 },
+        { nome: "PORTUGUESA / MUSSARELA", imagem: "assets/img/portuguesa-x-mussarela.webp", precoG: 40.00, precoM: 30.00 },
+        { nome: "PORTUGUESA / CALABRESA", imagem: "assets/img/portuguesa-x-calabresa.webp", precoG: 41.00, precoM: 31.00 },
+        { nome: "PORTUGUESA / FRANGO", imagem: "assets/img/portuguesa-x-frango.webp", precoG: 42.00, precoM: 32.00 },
+        { nome: "PORTUGUESA / PRESUNTO", imagem: "assets/img/portuguesa-x-presunto.webp", precoG: 40.00, precoM: 30.00 },
         { nome: "PORTUGUESA / 2 - QUEIJO", imagem: "assets/img/2-queijo-x-portuguesa.webp", precoG: 40.00, precoM: 30.00 }
     ],
     "Mix Frango": [
-        { nome: "FRANGO / MUSSARELA", imagem: "assets/img/frango-x-mussarela.webp", precoG: 39.50, precoM: 29.50 },
-        { nome: "FRANGO / CALABRESA", imagem: "assets/img/frango-x-calabresa.webp", precoG: 40.50, precoM: 30.50 },
-        { nome: "FRANGO / PORTUGUESA", imagem: "assets/img/frango-x-portuguesa.webp", precoG: 42, precoM: 32 },
-        { nome: "FRANGO / BOLONHESA", imagem: "assets/img/frango-x-bolonhesa.webp", precoG: 43.50, precoM: 33.50 },
-        { nome: "FRANGO / PRESUNTO", imagem: "assets/img/frango-x-presunto.webp", precoG: 40, precoM: 30 },
+        { nome: "FRANGO / MUSSARELA", imagem: "assets/img/frango-x-mussarela.webp", precoG: 40.00, precoM: 30.00 },
+        { nome: "FRANGO / CALABRESA", imagem: "assets/img/frango-x-calabresa.webp", precoG: 41.00, precoM: 31.00 },
+        { nome: "FRANGO / PORTUGUESA", imagem: "assets/img/frango-x-portuguesa.webp", precoG: 42.00, precoM: 32.00 },
+        { nome: "FRANGO / PRESUNTO", imagem: "assets/img/frango-x-presunto.webp", precoG: 40.00, precoM: 30.00 },
         { nome: "FRANGO / 2 - QUEIJO", imagem: "assets/img/2-queijo-x-frango.webp", precoG: 40.00, precoM: 30.00 }
     ],
     "Mix Presunto": [
-        { nome: "PRESUNTO / MUSSARELA", imagem: "assets/img/presunto-x-mussarela.webp", precoG: 37.50, precoM: 27.50 },
-        { nome: "PRESUNTO / CALABRESA", imagem: "assets/img/presunto-x-calabresa.webp", precoG: 38.50, precoM: 28.50 },
-        { nome: "PRESUNTO / PORTUGUESA", imagem: "assets/img/presunto-x-portuguesa.webp", precoG: 40, precoM: 30 },
-        { nome: "PRESUNTO / FRANGO", imagem: "assets/img/presunto-x-frango.webp", precoG: 40, precoM: 30 },
-        { nome: "PRESUNTO / BOLONHESA", imagem: "assets/img/presunto-x-bolonhesa.webp", precoG: 41.50, precoM: 31.50 },
-        { nome: "PRESUNTO / 2 - QUEIJO", imagem: "assets/img/2-queijo-x-presunto.webp", precoG: 38.50, precoM: 28.50 }
+        { nome: "PRESUNTO / MUSSARELA", imagem: "assets/img/presunto-x-mussarela.webp", precoG: 38.00, precoM: 28.00 },
+        { nome: "PRESUNTO / CALABRESA", imagem: "assets/img/presunto-x-calabresa.webp", precoG: 39.00, precoM: 29.00 },
+        { nome: "PRESUNTO / PORTUGUESA", imagem: "assets/img/presunto-x-portuguesa.webp", precoG: 40.00, precoM: 30.00 },
+        { nome: "PRESUNTO / FRANGO", imagem: "assets/img/presunto-x-frango.webp", precoG: 40.00, precoM: 30.00 },
+        { nome: "PRESUNTO / 2 - QUEIJO", imagem: "assets/img/2-queijo-x-presunto.webp", precoG: 39.00, precoM: 29.00 }
     ],
     "Mix 2 - Queijo": [
         { nome: "2 - QUEIJO / MUSSARELA", imagem: "assets/img/2-queijo-x-mussarela.webp", precoG: 37.00, precoM: 27.00 },
         { nome: "2 - QUEIJO / CALABRESA", imagem: "assets/img/2-queijo-x-calabresa.webp", precoG: 38.00, precoM: 28.00 },
         { nome: "2 - QUEIJO / PORTUGUESA", imagem: "assets/img/2-queijo-x-portuguesa.webp", precoG: 40.00, precoM: 30.00 },
         { nome: "2 - QUEIJO / FRANGO", imagem: "assets/img/2-queijo-x-frango.webp", precoG: 40.00, precoM: 30.00 },
-        { nome: "2 - QUEIJO / BOLONHESA", imagem: "assets/img/2-queijo-x-bolonhesa.webp", precoG: 42.00, precoM: 32.00 },
         { nome: "2 - QUEIJO / PRESUNTO", imagem: "assets/img/2-queijo-x-presunto.webp", precoG: 38.00, precoM: 28.00 }
     ]
 };
@@ -230,7 +224,6 @@ const cardapioBebidas = [
     { nome: "GUARANÁ-ANTARCTICA", desc: "Gelada", imagem: "./assets/img/imagem-guarana-antartica.webp", tamanhos: [{ tipo: "2L", preco: 12.00 }, { tipo: "1L", preco: 7.00 }] },
     { nome: "CAJUINA", desc: "Gelada", imagem: "./assets/img/imagem-cajuina.webp", tamanhos: [{ tipo: "2L", preco: 12.00 }, { tipo: "1L", preco: 7.00 }] },
     { nome: "IT-COLA", desc: "Gelada", imagem: "./assets/img/imagem-it-cola.webp", tamanhos: [{ tipo: "2L", preco: 7.00 }, { tipo: "1L", preco: 4.00 }] },
-    { nome: "IT-LIMÃO", desc: "Gelada", imagem: "./assets/img/imagem-it-limao.webp", tamanhos: [{ tipo: "2L", preco: 7.00 }, { tipo: "1L", preco: 4.00 }] },
     { nome: "PEPSI", desc: "Gelada", imagem: "./assets/img/imagem-pepis.webp", tamanhos: [{ tipo: "2L", preco: 10.00 }, { tipo: "1L", preco: 6.00 }] },
 ];
 
