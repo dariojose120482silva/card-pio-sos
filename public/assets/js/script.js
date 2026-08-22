@@ -220,11 +220,11 @@ const cardapioMisto = {
 
 // CARDÁPIO DE BEBIDAS
 const cardapioBebidas = [
-    { nome: "COCA-COLA", desc: "Gelada", imagem: "./assets/img/imagem-coca-cola.webp", tamanhos: [{ tipo: "2L", preco: 12.00 }, { tipo: "1L", preco: 7.00 }] },
-    { nome: "GUARANÁ-ANTARCTICA", desc: "Gelada", imagem: "./assets/img/imagem-guarana-antartica.webp", tamanhos: [{ tipo: "2L", preco: 12.00 }, { tipo: "1L", preco: 7.00 }] },
-    { nome: "CAJUINA", desc: "Gelada", imagem: "./assets/img/imagem-cajuina.webp", tamanhos: [{ tipo: "2L", preco: 12.00 }, { tipo: "1L", preco: 7.00 }] },
-    { nome: "IT-COLA", desc: "Gelada", imagem: "./assets/img/imagem-it-cola.webp", tamanhos: [{ tipo: "2L", preco: 7.00 }, { tipo: "1L", preco: 4.00 }] },
-    { nome: "PEPSI", desc: "Gelada", imagem: "./assets/img/imagem-pepis.webp", tamanhos: [{ tipo: "2L", preco: 10.00 }, { tipo: "1L", preco: 6.00 }] },
+    { nome: "COCA-COLA", desc: "Gelada", imagem: "./assets/img/imagem-coca-cola.webp", tamanhos: [{ tipo: "2L", preco: 13.50 }, { tipo: "1L", preco: 7.00 }] },
+    { nome: "GUARANÁ-ANTARCTICA", desc: "Gelada", imagem: "./assets/img/imagem-guarana-antartica.webp", tamanhos: [{ tipo: "2L", preco: 12.00 }, { tipo: "1L", preco: 6.00 }] },
+    { nome: "CAJUINA", desc: "Gelada", imagem: "./assets/img/imagem-cajuina.webp", tamanhos: [{ tipo: "2L", preco: 12.50 }, { tipo: "1L", preco: 6.00 }] },
+    { nome: "IT-COLA", desc: "Gelada", imagem: "./assets/img/imagem-it-cola.webp", tamanhos: [{ tipo: "2L", preco: 8.00 }, { tipo: "1L", preco: 4.00 }] },
+    { nome: "PEPSI", desc: "Gelada", imagem: "./assets/img/imagem-pepis.webp", tamanhos: [{ tipo: "2L", preco: 11.00 }, { tipo: "1L", preco: 6.00 }] },
 ];
 
 // CARRINHO
