@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedido Confirmado - S.O.S Pizza</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 40px 20px; background: #f4f4f4; color: #333; }
+        .container { background: white; max-width: 500px; margin: 0 auto; padding: 40px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .icon { font-size: 60px; color: #28a745; margin-bottom: 20px; }
+        h1 { color: #28a745; margin-bottom: 10px; }
+        p { font-size: 16px; line-height: 1.5; }
+        .pedido-id { font-weight: bold; background: #eee; padding: 5px 10px; border-radius: 5px; }
+        .btn-whatsapp { 
+            display: inline-block; 
+            background: #25D366; 
+            color: white; 
+            padding: 15px 30px; 
+            text-decoration: none; 
+            border-radius: 50px; 
+            font-weight: bold; 
+            font-size: 18px;
+            margin-top: 30px; 
+            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
+            transition: transform 0.2s;
+        }
+        .btn-whatsapp:hover { transform: scale(1.05); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">✅</div>
+        <h1>Pagamento Aprovado!</h1>
+        <p>Obrigado pela sua compra. Seu pedido já foi recebido e está sendo preparado.</p>
+        <p>Número do Pedido: <span class="pedido-id" id="pedido-id">Carregando...</span></p>
+        
+        <p style="margin-top: 30px; font-size: 14px; color: #666;">
+            Para agilizar sua entrega, clique abaixo para notificar a pizzaria no WhatsApp:
+        </p>
+
+        <a id="link-whatsapp" href="#" class="btn-whatsapp">
+             📲 Notificar S.O.S Pizza
+        </a>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const pedidoId = params.get('pedido_id');
+        
+        if (pedidoId) {
+            document.getElementById('pedido-id').innerText = pedidoId;
+        } else {
+            document.getElementById('pedido-id').innerText = 'Não identificado';
+        }
+
+        const numeroPizzaria = '5587981004878'; 
+        const mensagem = `Olá S.O.S Pizza! 🍕\n\nAcabei de fazer um pagamento aprovado via Mercado Pago.\n\n📋 *ID do Pedido:* ${pedidoId}\n\nPor favor, confirmem o preparo e a entrega!`;
+        
+        document.getElementById('link-whatsapp').href = `https://wa.me/${numeroPizzaria}?text=${encodeURIComponent(mensagem)}`;
+    </script>
+</body>
+</html>

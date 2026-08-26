@@ -1,46 +1,70 @@
 const express = require('express');
 const router = express.Router();
-const { MercadoPagoConfig, Payment } = require('mercadopago');
+const { MercadoPagoConfig, Preference } = require('mercadopago');
 
-// Inicializa o cliente do Mercado Pago com seu Access Token
+// Inicializa o Mercado Pago com o Token de Teste que está no Render
 const client = new MercadoPagoConfig({ accessToken: process.env.ACCESS_TOKEN });
+
+// Importa o seu model de Pedido (que você me mostrou)
+const Pedido = require('../models/Pedido'); 
 
 router.post('/', async (req, res) => {
     try {
-        const { token, transaction_amount, email, payment_method_id, installments, payer_doc } = req.body;
-        
-        const payment = new Payment(client);
-        
-        const result = await payment.create({
+        const { items, payer, subtotal, taxaEntrega, total } = req.body;
+
+        // 1. SALVA O PEDIDO NO BANCO (Com os campos exatos do seu Pedido.js)
+        const novoPedido = await Pedido.create({
+            cliente: {
+                nome: payer.nome,
+                telefone: payer.telefone,
+                endereco: payer.endereco,
+                bairro: payer.bairro
+            },
+            itens: items.map(item => ({
+                nome: item.nome,
+                quantidade: Number(item.quantidade),
+                preco: Number(item.preco)
+            })),
+            subtotal: Number(subtotal),
+            taxaEntrega: Number(taxaEntrega),
+            total: Number(total),
+            formaPagamento: 'Mercado Pago (Checkout Pro)',
+            status: 'Pendente' // ✅ Bate perfeitamente com o enum do seu Pedido.js
+        });
+
+        // 2. CRIA O LINK DE PAGAMENTO SEGURO (Modal do Mercado Pago)
+        const preference = new Preference(client);
+        const result = await preference.create({
             body: {
-                transaction_amount: Number(transaction_amount),
-                token: token,
-                description: 'Pagamento S.O.S Pizza',
-                installments: Number(installments),
-                payment_method_id: payment_method_id,
+                items: items.map(item => ({
+                    title: item.nome,
+                    unit_price: Number(item.preco),
+                    quantity: Number(item.quantidade),
+                    currency_id: 'BRL'
+                })),
                 payer: { 
-                    email: email,
-                    identification: {
-                        type: 'CPF',
-                        number: payer_doc // ⚠️ OBRIGATÓRIO PARA CARTÃO NO BRASIL
-                    }
-                }
+                    name: payer.nome, 
+                    email: payer.email || 'cliente@sospizza.com' 
+                },
+                back_urls: {
+                    // Após pagar, o Mercado Pago manda o cliente para esta página
+                    success: `${process.env.FRONTEND_URL}/sucesso.html?pedido_id=${novoPedido._id}`,
+                    failure: `${process.env.FRONTEND_URL}/`,
+                    pending: `${process.env.FRONTEND_URL}/`
+                },
+                auto_return: 'approved'
             }
         });
 
-        // Se quiser, aqui você pode atualizar o status do pedido para "Pago" no banco
-
+        // Devolve o link para o site redirecionar o cliente
         return res.status(200).json({ 
-            status: result.status, 
-            message: 'Pagamento processado com sucesso!',
-            paymentId: result.id
+            init_point: result.init_point, 
+            pedido_id: novoPedido._id 
         });
 
     } catch (error) {
-        console.error('Erro no Mercado Pago:', error);
-        return res.status(500).json({ 
-            error: error.message || 'Erro desconhecido ao processar pagamento' 
-        });
+        console.error('Erro ao criar pagamento:', error);
+        return res.status(500).json({ error: error.message });
     }
 });
 
