@@ -119,13 +119,17 @@
             </div>
 
             <!-- NOVO AVISO PROFISSIONAL -->
-            <div class="aviso-pagamento"
-                style="background: #1e3a2f; border-left: 4px solid #f59e0b; padding: 12px; border-radius: 6px; margin: 15px 0;">
-                <p style="margin: 0; font-size: 0.85rem; color: #cbd5e1; line-height: 1.4;">
-                    <i class="fas fa-info-circle" style="color: #f59e0b;"></i>
-                    <strong>Informação:</strong> Nosso sistema de pagamento online está sendo atualizado.
-                    Para garantir seu pedido, selecione <strong>"Dinheiro na Entrega"</strong> e finalize via WhatsApp.
-                    Agradecemos a compreensão!
+            <!-- AVISO DE INFORMAÇÃO CENTRALIZADO -->
+            <div class="aviso-pagamento">
+                <p
+                    style="margin: 0; font-size: 0.85rem; color: #cbd5e1; line-height: 1.4; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-info-circle" style="color: #f59e0b; flex-shrink: 0;"></i>
+                    <span>
+                        <strong>Informação:</strong> Nosso sistema de pagamento online está sendo atualizado.
+                        Para garantir seu pedido, selecione <strong>"Dinheiro na Entrega"</strong> e finalize via
+                        WhatsApp.
+                        Agradecemos a compreensão!
+                    </span>
                 </p>
             </div>
 
@@ -166,10 +170,13 @@
             </div>
 
             <!-- BOTÃO DE AÇÃO -->
-            <button class="btn-finalizar" id="finalizarPedido" onclick="finalizarPedido()"
-                style="width: 100%; margin-top: 15px; padding: 15px; background: #25D366; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;">
-                <i class="fas fa-lock"></i> Finalizar e Pagar com Segurança
+            <!-- BOTÃO WHATSAPP CENTRALIZADO -->
+            <button id="finalizarPedido" onclick="finalizarPedido()" class="btn-finalizar"
+               >
+                <i class="fab fa-whatsapp" style="font-size: 1.2rem;"></i>
+                Enviar o pedido
             </button>
+
         </section>
 
 
