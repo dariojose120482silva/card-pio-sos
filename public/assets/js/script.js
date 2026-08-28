@@ -4,27 +4,7 @@
 const numeroWhatsApp = "5587981004878"; // Número da Pizzaria
 
 // ==========================================
-// 2. CONTROLES DE UI E MÁSCARAS
-// ==========================================
-document.addEventListener('DOMContentLoaded', () => {
-    // Máscara de Telefone
-    const telInput = document.getElementById('clienteTelefone');
-    if (telInput) {
-        telInput.addEventListener('input', function (e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 11) value = value.slice(0, 11);
-            if (value.length > 6) {
-                value = `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7)}`;
-            } else if (value.length > 2) {
-                value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
-            }
-            e.target.value = value;
-        });
-    }
-});
-
-// ==========================================
-// 3. DADOS DO CARDÁPIO
+// 2. DADOS DO CARDÁPIO
 // ==========================================
 const cardapioTradicional = [
     { nome: "MUÇARELA", desc: "Molho, muçarela, orégano, tomate e azeitonas.", imagem: "assets/img/mussarela.webp", tamanhos: [{ tipo: "Grande", preco: 37 }, { tipo: "Média", preco: 27 }] },
@@ -89,7 +69,7 @@ const cardapioBebidas = [
 ];
 
 // ==========================================
-// 4. LÓGICA DO CARRINHO
+// 3. LÓGICA DO CARRINHO
 // ==========================================
 let carrinho = [];
 
@@ -113,7 +93,7 @@ window.adicionarAoCarrinho = function (pizzaNome, tamanho, preco) {
     });
     salvarCarrinho();
     atualizarInterface();
-    
+
     // Feedback visual
     const btn = event.target.closest('button');
     if (btn) {
@@ -121,7 +101,7 @@ window.adicionarAoCarrinho = function (pizzaNome, tamanho, preco) {
         btn.innerHTML = '<i class="fas fa-check"></i> Adicionado!';
         setTimeout(() => { btn.innerHTML = originalText; }, 800);
     }
-    
+
     const sidebar = document.getElementById('cartSidebar');
     if (sidebar) sidebar.classList.add('open');
 }
@@ -150,16 +130,16 @@ function calcularTotal() {
 window.atualizarInterface = function () {
     const cartItemsContainer = document.getElementById('cartItems');
     const cartCountElement = document.getElementById('cartCount');
-    
+
     if (cartCountElement) {
         cartCountElement.innerText = carrinho.length;
         cartCountElement.style.display = carrinho.length > 0 ? 'flex' : 'none';
     }
-    
+
     if (!cartItemsContainer) return;
-    
+
     cartItemsContainer.innerHTML = '';
-    
+
     if (carrinho.length === 0) {
         cartItemsContainer.innerHTML = '<p style="text-align: center; color: #888; padding: 2rem 0;">Seu carrinho está vazio</p>';
         document.getElementById('cartSubtotal').innerText = '0,00';
@@ -167,7 +147,7 @@ window.atualizarInterface = function () {
         document.getElementById('cartTotal').innerText = '0,00';
         return;
     }
-    
+
     let subtotal = 0;
     carrinho.forEach(item => {
         subtotal += item.preco;
@@ -184,18 +164,18 @@ window.atualizarInterface = function () {
         `;
         cartItemsContainer.appendChild(itemDiv);
     });
-    
+
     const selectBairro = document.getElementById('bairroSelect');
     const taxa = selectBairro ? (parseFloat(selectBairro.options[selectBairro.selectedIndex].dataset.taxa) || 0) : 0;
     const total = subtotal + taxa;
-    
+
     document.getElementById('cartSubtotal').innerText = subtotal.toFixed(2).replace('.', ',');
     document.getElementById('cartTaxa').innerText = taxa.toFixed(2).replace('.', ',');
     document.getElementById('cartTotal').innerText = total.toFixed(2).replace('.', ',');
 }
 
 // ==========================================
-// 5. FUNÇÃO FINALIZAR PEDIDO (ATUALIZADA)
+// 4. FUNÇÃO FINALIZAR PEDIDO (CORRIGIDA)
 // ==========================================
 window.finalizarPedido = async function () {
     if (carrinho.length === 0) {
@@ -208,7 +188,7 @@ window.finalizarPedido = async function () {
     const telefone = document.getElementById('clienteTelefone').value.trim();
     const endereco = document.getElementById('clienteEndereco').value.trim();
     const referencia = document.getElementById('clienteReferencia').value.trim();
-    
+
     const selectBairro = document.getElementById('bairroSelect');
     const bairroNome = selectBairro.options[selectBairro.selectedIndex].value;
     const taxaEntrega = getTaxaEntrega();
@@ -227,24 +207,24 @@ window.finalizarPedido = async function () {
     // CENÁRIO 1: PAGAMENTO VIA WHATSAPP (DINHEIRO/PIX MANUAL)
     // ==========================================
     if (formaPagamento === 'whatsapp') {
-        let mensagem = `🍕 *NOVO PEDIDO - S.O.S PIZZA*\n\n`;
+        let mensagem = ` *NOVO PEDIDO - S.O.S PIZZA*\n\n`;
         mensagem += ` *Cliente:* ${nome}\n`;
-        mensagem += `📱 *Telefone:* ${telefone}\n`;
-        mensagem += `📍 *Endereço:* ${endereco}, ${bairroNome}\n`;
+        mensagem += ` *Telefone:* ${telefone}\n`;
+        mensagem += ` *Endereço:* ${endereco}, ${bairroNome}\n`;
         if (referencia) mensagem += `🏠 *Referência:* ${referencia}\n`;
         mensagem += `\n📋 *Itens do Pedido:*\n`;
-        
+
         carrinho.forEach(item => {
             mensagem += `• 1x ${item.pizza} - R$ ${item.preco.toFixed(2)}\n`;
         });
-        
+
         mensagem += `\n💰 *Subtotal:* R$ ${subtotal.toFixed(2)}`;
         mensagem += `\n🛵 *Taxa de Entrega:* R$ ${taxaEntrega.toFixed(2)}`;
         mensagem += `\n✅ *TOTAL:* R$ ${total.toFixed(2)}`;
         mensagem += `\n💵 *Forma de Pagamento:* Dinheiro/PIX na Entrega`;
 
         window.open(`https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`, '_blank');
-        
+
         // Limpar carrinho após enviar
         carrinho = [];
         salvarCarrinho();
@@ -260,19 +240,32 @@ window.finalizarPedido = async function () {
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando link seguro...';
         btn.disabled = true;
 
-        // Prepara os dados no formato exato que o backend (pagamento.js) espera
+        // Captura e valida CPF
+        const cpfInput = document.getElementById('clienteCPF');
+        const cpf = cpfInput ? cpfInput.value.replace(/\D/g, '') : '';
+
+        if (!cpf || cpf.length !== 11) {
+            alert('⚠️ Por favor, preencha o CPF corretamente para pagamento online.');
+            btn.innerHTML = '<i class="fas fa-check-circle"></i> Finalizar Pedido';
+            btn.disabled = false;
+            return;
+        }
+
+        // Limpa o telefone (apenas números)
+        const telefoneLimpo = telefone.replace(/\D/g, '');
+
         const dadosPagamento = {
             items: carrinho.map(item => ({
                 nome: item.pizza,
                 quantidade: 1,
                 preco: item.preco
             })),
-            payer: { 
-                nome: nome, 
-                telefone: telefone, 
-                endereco: endereco, 
-                bairro: bairroNome,
-                email: 'cliente@sospizza.com'
+            payer: {
+                nome: nome,
+                telefone: telefoneLimpo,
+                cpf: cpf,
+                endereco: endereco,
+                bairro: bairroNome
             },
             subtotal: subtotal,
             taxaEntrega: taxaEntrega,
@@ -289,26 +282,21 @@ window.finalizarPedido = async function () {
             const data = await response.json();
 
             if (data.init_point) {
-                // REDIRECIONA PARA O MODAL DO MERCADO PAGO
                 window.location.href = data.init_point;
             } else {
-                alert(' Erro ao gerar pagamento: ' + (data.error || 'Tente novamente.'));
-                btn.innerHTML = '<i class="fas fa-lock"></i> Finalizar e Pagar com Segurança';
-                btn.disabled = false;
+                throw new Error(data.error || 'Falha ao gerar link');
             }
         } catch (error) {
-            console.error('Erro:', error);
-            alert('❌ Erro de conexão com o servidor.');
-            btn.innerHTML = '<i class="fas fa-lock"></i> Finalizar e Pagar com Segurança';
+            console.error(error);
+            alert('❌ Erro ao processar pagamento. Tente usar o WhatsApp.');
+            btn.innerHTML = '<i class="fas fa-check-circle"></i> Finalizar Pedido';
             btn.disabled = false;
         }
-    } else {
-        alert('Selecione uma forma de pagamento!');
     }
 }
 
 // ==========================================
-// 6. RENDERIZAÇÃO DO CARDÁPIO
+// 5. RENDERIZAÇÃO DO CARDÁPIO (FORA DA FUNÇÃO DE PEDIDO!)
 // ==========================================
 function renderizarTradicional() {
     const container = document.getElementById('tradicionalGrid');
@@ -317,7 +305,7 @@ function renderizarTradicional() {
         <div class="menu-item"> 
             <div class="menu-item-image"><img src="${pizza.imagem}" alt="${pizza.nome}" loading="lazy"></div> 
             <div class="menu-item-content"> 
-                <h3 class="menu-item-name">🍕 ${pizza.nome}</h3> 
+                <h3 class="menu-item-name"> ${pizza.nome}</h3> 
                 <p class="menu-item-desc">${pizza.desc}</p> 
                 <div> 
                     ${pizza.tamanhos.map(t => `
@@ -337,7 +325,7 @@ function renderizarMisto() {
     if (!tabsContainer || !contentContainer) return;
 
     const categorias = Object.keys(cardapioMisto);
-    
+
     tabsContainer.innerHTML = categorias.map((cat, idx) => `
         <button class="tab-btn ${idx === 0 ? 'active' : ''}" data-tab="${cat.replace(/ /g, '_')}"> 
             <i class="fas fa-utensils"></i> ${cat} 
@@ -406,7 +394,7 @@ function renderizarBebidas() {
 }
 
 // ==========================================
-// 7. INICIALIZAÇÃO E EVENTOS
+// 6. INICIALIZAÇÃO E EVENTOS
 // ==========================================
 function initSwitch() {
     const btnTrad = document.getElementById('btnTradicional');
@@ -448,20 +436,66 @@ function initCartControls() {
     const cartToggle = document.getElementById('cartToggle');
     const cartSidebar = document.getElementById('cartSidebar');
     const closeCart = document.getElementById('closeCart');
-    
+
     if (cartToggle) cartToggle.addEventListener('click', () => cartSidebar.classList.toggle('open'));
     if (closeCart) closeCart.addEventListener('click', () => cartSidebar.classList.remove('open'));
-    
+
     const bairroSelect = document.getElementById('bairroSelect');
     if (bairroSelect) bairroSelect.addEventListener('change', atualizarInterface);
+
+    // ==========================================
+    // LÓGICA DINÂMICA PARA MOSTRAR/OCULTAR CPF
+    // ==========================================
+    const pagamentoSelect = document.getElementById('pagamentoSelect');
+    const cpfContainer = document.getElementById('cpfContainer');
+    const cpfInput = document.getElementById('clienteCPF');
+
+    if (pagamentoSelect && cpfContainer && cpfInput) {
+        pagamentoSelect.addEventListener('change', function () {
+            if (this.value === 'mercadopago') {
+                cpfContainer.style.display = 'block';
+                cpfInput.required = true;
+            } else {
+                cpfContainer.style.display = 'none';
+                cpfInput.required = false;
+                cpfInput.value = '';
+            }
+        });
+
+        cpfInput.addEventListener('input', function (e) {
+            let v = e.target.value.replace(/\D/g, '');
+            if (v.length > 11) v = v.slice(0, 11);
+            if (v.length > 9) v = `${v.slice(0, 3)}.${v.slice(3, 6)}.${v.slice(6, 9)}-${v.slice(9)}`;
+            else if (v.length > 6) v = `${v.slice(0, 3)}.${v.slice(3, 6)}.${v.slice(6)}`;
+            else if (v.length > 3) v = `${v.slice(0, 3)}.${v.slice(3)}`;
+            e.target.value = v;
+        });
+    }
 }
+
+// MÁSCARA DE TELEFONE
+document.addEventListener('DOMContentLoaded', () => {
+    const telInput = document.getElementById('clienteTelefone');
+    if (telInput) {
+        telInput.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.slice(0, 11);
+            if (value.length > 6) {
+                value = `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7)}`;
+            } else if (value.length > 2) {
+                value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
+            }
+            e.target.value = value;
+        });
+    }
+});
 
 // INICIALIZAÇÃO GERAL
 document.addEventListener('DOMContentLoaded', () => {
     try { renderizarTradicional(); } catch (e) { console.error("Erro na Tradicional:", e); }
     try { renderizarMisto(); } catch (e) { console.error("Erro no Misto:", e); }
     try { renderizarBebidas(); } catch (e) { console.error("Erro nas Bebidas:", e); }
-    
+
     initSwitch();
     carregarCarrinho();
     initCartControls();
