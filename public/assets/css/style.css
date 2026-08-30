@@ -135,7 +135,7 @@ body {
   justify-content: center;
   padding: 0.5rem;
   overflow: hidden;
- 
+
   transition: transform 0.3s ease;
 }
 
@@ -170,10 +170,13 @@ body {
 }
 
 @keyframes pulse-badge {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
     box-shadow: 0 4px 12px rgba(255, 87, 26, 0.5);
   }
+
   50% {
     transform: scale(1.1);
     box-shadow: 0 4px 20px rgba(255, 87, 26, 0.8);
@@ -224,10 +227,13 @@ body {
 }
 
 @keyframes pulse-dot {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.4;
     transform: scale(0.85);
@@ -290,6 +296,7 @@ body {
     opacity: 0.2;
   }
 }
+
 /* ====== HERO SECTION ====== */
 .hero-section {
   background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
@@ -313,9 +320,12 @@ body {
   text-align: center;
   line-height: 1.2;
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
-  white-space: nowrap;      /* ✅ Evita quebra de linha */
-  overflow: hidden;         /* ✅ Esconde overflow */
-  text-overflow: ellipsis;  /* ✅ Adiciona "..." se necessário */
+  white-space: nowrap;
+  /* ✅ Evita quebra de linha */
+  overflow: hidden;
+  /* ✅ Esconde overflow */
+  text-overflow: ellipsis;
+  /* ✅ Adiciona "..." se necessário */
 }
 
 /* Subtítulo/descrição */
@@ -340,7 +350,8 @@ body {
 
   .hero-title {
     font-size: 3rem;
-    white-space: normal;  /* ✅ Permite quebra no desktop se necessário */
+    white-space: normal;
+    /* ✅ Permite quebra no desktop se necessário */
   }
 
   .hero-subtitle {
@@ -352,7 +363,8 @@ body {
 @media (max-width: 480px) {
   .hero-title {
     font-size: 1.75rem;
-    white-space: nowrap;  /* ✅ Força sem quebra no mobile */
+    white-space: nowrap;
+    /* ✅ Força sem quebra no mobile */
   }
 
   .hero-subtitle {
@@ -1047,17 +1059,45 @@ body {
 }
 
 /* 9. AVISO */
-.aviso-pagamento {
-  background: rgba(251, 191, 36, 0.1);
-  border-left: 4px solid #fbbf24;
-  padding: 1rem 1.25rem;
+.aviso-cartao {
+  width: 100%;
+  /* Garante que ocupe toda a largura disponível */
+  box-sizing: border-box;
+  /* Inclui o padding no cálculo da largura para não estourar */
+  background: linear-gradient(135deg, #3c37375b 0%, #383737 100%);
+  border-bottom: 2px solid #04ebf3;
+  /* Aumentei para 2px para destacar bem o azul */
+  padding: 1rem;
+  box-shadow: 0 2px 5px rgba(4, 225, 245, 0.4);
+  margin-bottom: 1rem;
+  width: auto;
+  margin: 0 1.5rem 1.5rem 1.5rem;
+  border-radius: 10px;
 }
 
-.aviso-pagamento p {
+.aviso-cartao p {
   margin: 0;
-  color: #fbbf24;
   font-size: 0.85rem;
+  color: #f0f406;
+  /* Texto amarelo como você definiu */
   line-height: 1.4;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.aviso-cartao i {
+  color: #06d5f5;
+  /* Ícone azul */
+  flex-shrink: 0;
+}
+
+.aviso-cartao span {
+  display: inline;
+}
+
+.aviso-cartao strong {
+  color: #ffffff;
 }
 
 /* 10. TOTAL */
