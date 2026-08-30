@@ -8,7 +8,7 @@ router.post('/', async (req, res) => {
     try {
         const pedido = new Pedido(req.body);
         await pedido.save();
-        
+
         // Registra a entrada financeira (mesmo que pendente, já fica registrado)
         const movimentacao = new Movimentacao({
             tipo: 'Entrada',
@@ -17,7 +17,7 @@ router.post('/', async (req, res) => {
             categoria: 'Venda'
         });
         await movimentacao.save();
-        
+
         res.status(201).json(pedido);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -53,10 +53,10 @@ router.patch('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         const pedidoId = req.params.id;
-        
+
         // 1. Busca o pedido antes de deletar para saber o valor e a descrição
         const pedido = await Pedido.findById(pedidoId);
-        
+
         if (!pedido) {
             return res.status(404).json({ message: 'Pedido não encontrado' });
         }
@@ -67,7 +67,7 @@ router.delete('/:id', async (req, res) => {
         // 3. Deleta o registro financeiro (Entrada) que foi criado junto com este pedido
         // Ele busca pela descrição exata que foi salva no momento da criação
         const descricaoParaDeletar = 'Pedido #' + pedidoId.toString().slice(-4);
-        
+
         await Movimentacao.deleteOne({
             tipo: 'Entrada',
             descricao: descricaoParaDeletar,
@@ -79,5 +79,19 @@ router.delete('/:id', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
+// Buscar pedido específico por ID (pública, para a página de sucesso)
+router.get('/publico/:id', async (req, res) => {
+    try {
+        const pedido = await Pedido.findById(req.params.id);
+        if (!pedido) {
+            return res.status(404).json({ message: 'Pedido não encontrado' });
+        }
+        res.json(pedido);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 
 module.exports = router;
