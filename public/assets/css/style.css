@@ -1069,7 +1069,7 @@ body {
   /* Aumentei para 2px para destacar bem o azul */
   padding: 1rem;
   box-shadow: 0 2px 5px rgba(4, 225, 245, 0.4);
-  margin-bottom: 1rem;
+  margin-bottom: 0.1rem;
   width: auto;
   margin: 0 1.5rem 1.5rem 1.5rem;
   border-radius: 10px;
@@ -1100,26 +1100,22 @@ body {
   color: #ffffff;
 }
 
-/* 10. TOTAL */
 .cart-total {
   background: linear-gradient(135deg, #232c43 0%, #31415b 100%);
-  padding: 1.25rem;
+  padding: 0.5rem 0.75rem;  /* Mínimo possível */
   display: flex;
   flex-direction: column;
+
 }
 
 .cart-total strong {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #e2e8f0;
-  font-size: 1rem;
+  margin: 0.2rem;
+  font-size: 0.85rem;
+  line-height: 1.1;
 }
 
 .cart-total strong:last-child {
-  font-size: 1.5rem;
-  color: #ff571a;
-  margin-top: 0.5rem;
-  margin-bottom: 0;
+  font-size: 1rem;
 }
 
 /* 11. BOTÃO FINALIZAR (ALINHADO PERFEITAMENTE) */
