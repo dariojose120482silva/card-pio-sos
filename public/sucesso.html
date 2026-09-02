@@ -5,73 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pedido Confirmado - S.O.S Pizza</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            text-align: center; 
-            padding: 40px 20px; 
-            background: #121212; 
-            color: #fff; 
-        }
-        .container { 
-            background: #1e1e1e; 
-            max-width: 500px; 
-            margin: 0 auto; 
-            padding: 40px; 
-            border-radius: 15px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5); 
-        }
-        .icon { font-size: 60px; color: #25D366; margin-bottom: 20px; }
-        h1 { color: #25D366; margin-bottom: 10px; }
-        p { font-size: 16px; line-height: 1.5; color: #cbd5e1; }
-        .pedido-id { 
-            font-weight: bold; 
-            background: #334155; 
-            padding: 5px 10px; 
-            border-radius: 5px; 
-            color: #fff;
-        }
-        .btn-whatsapp { 
-            display: inline-block; 
-            background: #25D366; 
-            color: white; 
-            padding: 15px 30px; 
-            text-decoration: none; 
-            border-radius: 50px; 
-            font-weight: bold; 
-            font-size: 18px;
-            margin-top: 30px; 
-            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
-            transition: transform 0.2s;
-        }
-        .btn-whatsapp:hover { transform: scale(1.05); }
-        .btn-home {
-            display: block;
-            margin-top: 20px;
-            color: #888;
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-        .btn-home:hover { color: #fff; }
-        .loading { color: #f59e0b; font-style: italic; }
-    </style>
+    <link rel="stylesheet" href="assets/css/sucesso.css">
 </head>
 <body>
     <div class="container">
         <div class="icon">✅</div>
         <h1>Pagamento Aprovado!</h1>
         <p>Obrigado pela sua compra. Seu pedido já foi recebido e está sendo preparado.</p>
-        <p>Número do Pedido: <span class="pedido-id" id="pedido-id">Carregando...</span></p>
         
-        <p style="margin-top: 30px; font-size: 14px; color: #cbd5e1;">
-            Para agilizar sua entrega, clique abaixo para notificar a pizzaria no WhatsApp com os detalhes do seu pedido:
-        </p>
+        <p class="pedido">Número do Pedido: <span id="pedido-id">Carregando...</span></p>
+
+        <p>Para agilizar sua entrega, clique abaixo para notificar a pizzaria no WhatsApp com os detalhes do seu pedido:</p>
 
         <a id="link-whatsapp" href="#" class="btn-whatsapp">
-            <i class="fab fa-whatsapp"></i>  Notificar S.O.S Pizza
+            <i class="fab fa-whatsapp"></i> Notificar S.O.S Pizza
         </a>
 
-        <a href="index.html" class="btn-home">← Voltar para o Cardápio</a>
+        <a href="index.html" class="btn-home">Voltar para o Cardápio</a>
     </div>
 
     <script>
@@ -85,7 +35,6 @@
             document.getElementById('pedido-id').innerText = 'Não identificado';
         }
 
-        // Busca os dados do pedido pela API
         async function carregarPedido() {
             if (!pedidoId) return;
             
@@ -94,9 +43,8 @@
                 const pedido = await response.json();
                 
                 if (response.ok && pedido) {
-                    // Monta a mensagem formatada igual ao pedido via WhatsApp
                     let mensagem = `🍕 *NOVO PEDIDO - S.O.S PIZZA (PAGO ONLINE)*\n\n`;
-                    mensagem += `👤 *Cliente:* ${pedido.cliente?.nome || 'Não informado'}\n`;
+                    mensagem += ` *Cliente:* ${pedido.cliente?.nome || 'Não informado'}\n`;
                     mensagem += `📱 *Telefone:* ${pedido.cliente?.telefone || 'Não informado'}\n`;
                     mensagem += `📍 *Endereço:* ${pedido.cliente?.endereco || 'Não informado'}, ${pedido.cliente?.bairro || ''}\n`;
                     
@@ -104,7 +52,7 @@
                         mensagem += `🏠 *Referência:* ${pedido.cliente.referencia}\n`;
                     }
                     
-                    mensagem += `\n *Itens do Pedido:*\n`;
+                    mensagem += `\n📋 *Itens do Pedido:*\n`;
                     
                     if (pedido.itens && pedido.itens.length > 0) {
                         pedido.itens.forEach(item => {
@@ -113,22 +61,21 @@
                     }
                     
                     mensagem += `\n💰 *Subtotal:* R$ ${(pedido.subtotal || 0).toFixed(2)}`;
-                    mensagem += `\n *Taxa de Entrega:* R$ ${(pedido.taxaEntrega || 0).toFixed(2)}`;
+                    mensagem += `\n🛵 *Taxa de Entrega:* R$ ${(pedido.taxaEntrega || 0).toFixed(2)}`;
                     mensagem += `\n✅ *TOTAL:* R$ ${(pedido.total || 0).toFixed(2)}`;
-                    mensagem += `\n💳 *Forma de Pagamento:* Cartão/PIX (Pago via Mercado Pago)`;
+                    mensagem += `\n *Forma de Pagamento:* Cartão/PIX (Pago via Mercado Pago)`;
                     mensagem += `\n🆔 *ID do Pedido:* ${pedidoId}`;
                     
                     document.getElementById('link-whatsapp').href = 
                         `https://wa.me/${numeroPizzaria}?text=${encodeURIComponent(mensagem)}`;
                 } else {
-                    // Fallback caso não consiga buscar
                     const mensagemFallback = `🍕 *PAGAMENTO APROVADO - S.O.S PIZZA*\n\nOlá! Acabei de fazer um pagamento aprovado via Mercado Pago.\n\n🆔 *ID do Pedido:* ${pedidoId}\n\nPor favor, confirmem o preparo e a entrega!`;
                     document.getElementById('link-whatsapp').href = 
                         `https://wa.me/${numeroPizzaria}?text=${encodeURIComponent(mensagemFallback)}`;
                 }
             } catch (error) {
                 console.error('Erro ao carregar pedido:', error);
-                const mensagemErro = `🍕 *PAGAMENTO APROVADO - S.O.S PIZZA*\n\nOlá! Acabei de fazer um pagamento aprovado via Mercado Pago.\n\n🆔 *ID do Pedido:* ${pedidoId}\n\nPor favor, confirmem o preparo e a entrega!`;
+                const mensagemErro = ` *PAGAMENTO APROVADO - S.O.S PIZZA*\n\nOlá! Acabei de fazer um pagamento aprovado via Mercado Pago.\n\n🆔 *ID do Pedido:* ${pedidoId}\n\nPor favor, confirmem o preparo e a entrega!`;
                 document.getElementById('link-whatsapp').href = 
                     `https://wa.me/${numeroPizzaria}?text=${encodeURIComponent(mensagemErro)}`;
             }

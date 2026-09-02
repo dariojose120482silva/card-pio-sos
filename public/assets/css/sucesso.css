@@ -1,0 +1,199 @@
+/* ==========================================
+   PÁGINA DE SUCESSO - S.O.S PIZZA
+   ========================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: #fff;
+}
+
+/* Container Principal */
+.container {
+    background: rgba(30, 30, 46, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 40px 30px;
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Ícone de Sucesso */
+.icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 40px;
+    box-shadow: 0 10px 30px rgba(37, 211, 102, 0.3);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 10px 30px rgba(37, 211, 102, 0.3);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 15px 40px rgba(37, 211, 102, 0.5);
+    }
+}
+
+/* Título */
+h1 {
+    color: #25D366;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    font-weight: 700;
+    text-shadow: 0 2px 10px rgba(37, 211, 102, 0.3);
+}
+
+/* Descrição */
+p {
+    color: #cbd5e1;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+/* Número do Pedido */
+.pedido {
+    background: linear-gradient(135deg, #232c43 0%, #31415b 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin: 20px 0;
+    font-size: 1rem;
+    color: #e2e8f0;
+}
+
+.pedido span {
+    display: block;
+    margin-top: 8px;
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #ff571a;
+    background: rgba(255, 87, 26, 0.1);
+    padding: 8px 15px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 87, 26, 0.3);
+}
+
+/* Instrução do WhatsApp */
+p:nth-of-type(2) {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin-top: 25px;
+    margin-bottom: 20px;
+}
+
+/* Botão WhatsApp */
+.btn-whatsapp {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    color: white;
+    text-decoration: none;
+    padding: 16px 30px;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    width: 100%;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3);
+    border: none;
+    cursor: pointer;
+}
+
+.btn-whatsapp:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(37, 211, 102, 0.5);
+}
+
+.btn-whatsapp i {
+    font-size: 1.4rem;
+}
+
+/* Botão Voltar */
+.btn-home {
+    display: inline-block;
+    margin-top: 20px;
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.btn-home:hover {
+    color: #fff;
+}
+
+.btn-home::before {
+    content: '← ';
+}
+
+/* ==========================================
+   RESPONSIVO
+   ========================================== */
+@media (max-width: 480px) {
+    .container {
+        padding: 30px 20px;
+    }
+
+    h1 {
+        font-size: 1.2rem;
+    }
+
+    .icon {
+        width: 70px;
+        height: 70px;
+        font-size: 35px;
+    }
+
+    .btn-whatsapp {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 14px 25px;
+        font-size: 0.9rem;
+        width: 100%;
+     
+    }
+
+    .pedido span {
+        font-size: 1.1rem;
+    }
+}
