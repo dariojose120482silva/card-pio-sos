@@ -173,15 +173,19 @@ async function carregarDadosReais() {
         const resFinLista = await fetch('/api/financeiro');
         const listaFin = await resFinLista.json();
 
-        // ✅ CORREÇÃO: Aceita QUALQUER variação de "saída"
+        // ✅ CORREÇÃO: Captura "Saida", "Saída", "Saídas", "Saidas", "Saída (Despesa)", etc.
         listaFin.filter(f => {
             const dentroSemana = estaDentroDaSemana(f.data);
-            const ehSaida = f.tipo && f.tipo.toLowerCase().includes('saida'); // Ignora acento e pega "Saida", "Saída", "Saídas", etc.
+            // Normaliza o texto: remove acentos e deixa minúsculo para comparação segura
+            const tipoNormalizado = f.tipo ? f.tipo.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') : '';
+            const ehSaida = tipoNormalizado.includes('saida');
+
             return dentroSemana && ehSaida;
         }).forEach(f => {
             totalSaidasSemana += f.valor;
         });
 
+        
         const saldoSemana = totalEntradasSemana - totalSaidasSemana;
 
         let html = `

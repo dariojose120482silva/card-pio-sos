@@ -6,10 +6,19 @@ body {
         padding: 20px;
 }
 
+.header-painel {
+   border: 1px solid #eef3f346; 
+   border-radius: 10px;
+   background-color: #2b3939cf;
+   padding: 0.1rem;
+   margin-bottom: 1rem;
+}
+
 h1 {
-        color: #ffb59e;
+        margin-top: 0.2rem;
+        color: #8f8c8c91;
         text-align: center;
-        margin: 0 0 20px 0;
+        font-size: 1.8rem;
 }
 
 .tabs {
@@ -29,6 +38,7 @@ h1 {
         cursor: pointer;
         font-weight: bold;
         transition: all 0.2s;
+        margin-bottom: 0.0rem;
 }
 
 .tab-btn.active {
