@@ -172,7 +172,13 @@ async function carregarDadosReais() {
         // Soma saídas do financeiro da semana
         const resFinLista = await fetch('/api/financeiro');
         const listaFin = await resFinLista.json();
-        listaFin.filter(f => estaDentroDaSemana(f.data) && (f.tipo === 'Saida' || f.tipo === 'Saída')).forEach(f => {
+
+        // ✅ CORREÇÃO: Aceita QUALQUER variação de "saída"
+        listaFin.filter(f => {
+            const dentroSemana = estaDentroDaSemana(f.data);
+            const ehSaida = f.tipo && f.tipo.toLowerCase().includes('saida'); // Ignora acento e pega "Saida", "Saída", "Saídas", etc.
+            return dentroSemana && ehSaida;
+        }).forEach(f => {
             totalSaidasSemana += f.valor;
         });
 
@@ -202,7 +208,7 @@ async function carregarDadosReais() {
             dia.setDate(inicioSemana.getDate() + i);
             const chave = chaveDia(dia);
             const pedidosDoDia = pedidosPorDia[chave] || [];
-            
+
             // Mostra todos os pedidos do dia, mas o total do dia só soma os entregues
             const validos = pedidosDoDia.filter(p => p.status === 'Entregue');
             const totalDia = validos.reduce((s, p) => s + p.total, 0);
