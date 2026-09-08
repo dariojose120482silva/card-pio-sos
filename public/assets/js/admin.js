@@ -169,23 +169,14 @@ async function carregarDadosReais() {
             totalEntradasSemana += p.total;
         });
 
-        // Soma saídas do financeiro da semana
+         // Soma saídas do financeiro da semana
         const resFinLista = await fetch('/api/financeiro');
         const listaFin = await resFinLista.json();
-
-        // ✅ CORREÇÃO: Captura "Saida", "Saída", "Saídas", "Saidas", "Saída (Despesa)", etc.
-        listaFin.filter(f => {
-            const dentroSemana = estaDentroDaSemana(f.data);
-            // Normaliza o texto: remove acentos e deixa minúsculo para comparação segura
-            const tipoNormalizado = f.tipo ? f.tipo.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') : '';
-            const ehSaida = tipoNormalizado.includes('saida');
-
-            return dentroSemana && ehSaida;
-        }).forEach(f => {
+        listaFin.filter(f => estaDentroDaSemana(f.data) && (f.tipo === 'Saida' || f.tipo === 'Saída')).forEach(f => {
             totalSaidasSemana += f.valor;
         });
 
-        
+
         const saldoSemana = totalEntradasSemana - totalSaidasSemana;
 
         let html = `
