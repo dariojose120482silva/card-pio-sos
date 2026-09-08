@@ -127,10 +127,9 @@ async function cancelarPedido(id) {
     } catch (e) { alert('❌ Erro de conexão.'); }
 }
 
-// ====== 7. CARREGAMENTO DE DADOS (Função Principal) ======
+// ====== 7. CARREGAMENTO DE DADOS (Função Principal Corrigida) ======
 async function carregarDadosReais() {
     try {
-        // Atualiza o texto do período selecionado
         const periodoEl = document.getElementById('periodo-selecionado');
         if (periodoEl) {
             periodoEl.textContent = getPeriodoTexto();
@@ -155,15 +154,18 @@ async function carregarDadosReais() {
         const hoje = new Date();
         const hojeChave = chaveDia(hoje);
 
+        // ✅ CORREÇÃO 1: Forçar início da semana na SEGUNDA-FEIRA
+        const diaSemana = hoje.getDay() || 7; // Faz domingo ser 7
         const inicioSemana = new Date(hoje);
-        inicioSemana.setDate(hoje.getDate() - hoje.getDay() + (semanaOffset * 7));
+        inicioSemana.setDate(hoje.getDate() - diaSemana + 1 + (semanaOffset * 7)); // +1 = Segunda
+        inicioSemana.setHours(0, 0, 0, 0);
 
         // Calcula totais da semana selecionada
         let totalEntradasSemana = 0;
         let totalSaidasSemana = 0;
 
-        // Soma entradas dos pedidos da semana
-        pedidosDaSemana.filter(p => p.status !== 'Cancelado').forEach(p => {
+        // ✅ CORREÇÃO 2: Somar APENAS pedidos com status 'Entregue'
+        pedidosDaSemana.filter(p => p.status === 'Entregue').forEach(p => {
             totalEntradasSemana += p.total;
         });
 
@@ -178,7 +180,7 @@ async function carregarDadosReais() {
 
         let html = `
             <div class="card" style="border-left: 4px solid ${semanaOffset === 0 ? '#28a745' : '#ffc107'}">
-                <p style="font-size: 0.9rem; color: #aaa; margin-bottom: 10px;">${semanaOffset === 0 ? ' Resumo Total (Todo o Período)' : '📅 Resumo da Semana Selecionada'}</p>
+                <p style="font-size: 0.9rem; color: #aaa; margin-bottom: 10px;">${semanaOffset === 0 ? '📊 Resumo Total (Todo o Período)' : '📅 Resumo da Semana Selecionada'}</p>
                 <p style="font-size: 1.1rem;">💵 Entradas: <span class="success">R$ ${fin.totalEntradas.toFixed(2)}</span></p>
                 <p style="font-size: 1.1rem;">💸 Saídas: <span class="danger">R$ ${fin.totalSaidas.toFixed(2)}</span></p>
                 <hr style="border-color: #555; margin: 15px 0;">
@@ -186,8 +188,8 @@ async function carregarDadosReais() {
             </div>
             
             <div class="card" style="background: #2a2a2a; margin-top: 15px;">
-                <p style="font-size: 1.1rem; margin-bottom: 10px;">📈 Desta Semana:</p>
-                <p style="font-size: 1rem;"> Entradas: <span class="success">R$ ${totalEntradasSemana.toFixed(2)}</span></p>
+                <p style="font-size: 1.1rem; margin-bottom: 10px;">📈 Desta Semana (Seg-Dom):</p>
+                <p style="font-size: 1rem;">💵 Entradas (Entregues): <span class="success">R$ ${totalEntradasSemana.toFixed(2)}</span></p>
                 <p style="font-size: 1rem;">💸 Saídas: <span class="danger">R$ ${totalSaidasSemana.toFixed(2)}</span></p>
                 <hr style="border-color: #555; margin: 10px 0;">
                 <p style="font-size: 1.2rem;">Saldo da Semana: <strong class="${saldoSemana >= 0 ? 'success' : 'danger'}">R$ ${saldoSemana.toFixed(2)}</strong></p>
@@ -200,11 +202,13 @@ async function carregarDadosReais() {
             dia.setDate(inicioSemana.getDate() + i);
             const chave = chaveDia(dia);
             const pedidosDoDia = pedidosPorDia[chave] || [];
-            const validos = pedidosDoDia.filter(p => p.status !== 'Cancelado');
+            
+            // Mostra todos os pedidos do dia, mas o total do dia só soma os entregues
+            const validos = pedidosDoDia.filter(p => p.status === 'Entregue');
             const totalDia = validos.reduce((s, p) => s + p.total, 0);
 
             html += `<div class="data-header">${formatarDia(dia)}${chave === hojeChave ? ' — HOJE' : ''}</div>`;
-            html += `<div class="total-dia">Total do dia: R$ ${totalDia.toFixed(2)} (${validos.length} pedidos)</div>`;
+            html += `<div class="total-dia">Total Entregue: R$ ${totalDia.toFixed(2)} (${validos.length} pedidos)</div>`;
             pedidosDoDia.forEach(p => { html += cardPedido(p); });
         }
 
@@ -216,10 +220,10 @@ async function carregarDadosReais() {
             html += `<h2 style="margin-top: 30px;">📜 Histórico Anterior</h2>`;
             anteriores.forEach(ch => {
                 const pedidosDoDia = pedidosPorDia[ch];
-                const validos = pedidosDoDia.filter(p => p.status !== 'Cancelado');
+                const validos = pedidosDoDia.filter(p => p.status === 'Entregue');
                 const totalDia = validos.reduce((s, p) => s + p.total, 0);
                 html += `<div class="data-header">${formatarDia(new Date(pedidosDoDia[0].dataPedido))}</div>`;
-                html += `<div class="total-dia">Total do dia: R$ ${totalDia.toFixed(2)} (${validos.length} pedidos)</div>`;
+                html += `<div class="total-dia">Total Entregue: R$ ${totalDia.toFixed(2)} (${validos.length} pedidos)</div>`;
                 pedidosDoDia.forEach(p => { html += cardPedido(p); });
             });
         }
@@ -233,15 +237,10 @@ async function carregarDadosReais() {
         const resIns = await fetch('/api/insumos');
         const insumos = await resIns.json();
 
-        // 🔍 DIAGNÓSTICO: Olhe o Console (F12) para ver se o _id está vindo do banco
-        console.log("DADOS BRUTOS DOS INSUMOS:", insumos);
-
         document.getElementById('lista-insumos').innerHTML = insumos.length === 0
             ? '<p>Nenhum insumo ainda.</p>'
             : insumos.map(i => {
-                // Forçamos o uso do _id. Se não existir, colocamos um texto de erro para debug
                 const idSeguro = i._id ? i._id : 'SEM_ID';
-
                 return `
                 <div class="card" style="display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap;">
                     <div style="flex: 1; min-width: 250px;">
@@ -256,7 +255,6 @@ async function carregarDadosReais() {
                 </div>`;
             }).join('');
 
-        // Carregar lista de lançamentos financeiros
         const containerFin = document.getElementById('lista-lancamentos-fin');
         if (containerFin) {
             containerFin.innerHTML = listaFin.length === 0
@@ -282,10 +280,9 @@ async function carregarDadosReais() {
         }
     } catch (erro) {
         console.error("Erro ao carregar dados:", erro);
-        document.querySelectorAll('.section').forEach(s => s.innerHTML = '<p class="danger">️ Erro ao conectar com o banco.</p>');
+        document.querySelectorAll('.section').forEach(s => s.innerHTML = '<p class="danger">⚠️ Erro ao conectar com o banco.</p>');
     }
 }
-
 // ====== 8. SALVAR PEDIDO REAL ======
 async function salvarPedidoReal() {
     const subtotal = parseFloat(document.getElementById('pedidoSubtotal').value) || 0;
