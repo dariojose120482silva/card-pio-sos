@@ -92,4 +92,18 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+// ✅ 5. NOVA ROTA: Buscar pedido específico por ID (pública, para a página de sucesso)
+router.get('/publico/:id', async (req, res) => {
+    try {
+        const pedido = await Pedido.findById(req.params.id);
+        if (!pedido) {
+            return res.status(404).json({ message: 'Pedido não encontrado' });
+        }
+        res.json(pedido);
+    } catch (error) {
+        console.error("Erro ao buscar pedido público:", error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router;
