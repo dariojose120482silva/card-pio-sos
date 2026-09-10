@@ -94,7 +94,7 @@ router.get('/publico/:id', async (req, res) => {
 });
 
 // 6. FERRAMENTA DE CORREÇÃO EM MASSA (Para salvar os pedidos de terça/quarta)
-router.post('/corrigir-historico', async (req, res) => {
+router.get('/corrigir-historico', async (req, res) => {
     try {
         const pedidosEntregues = await Pedido.find({ status: 'Entregue' });
         let corrigidos = 0;

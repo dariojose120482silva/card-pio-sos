@@ -2,25 +2,38 @@
 let semanaOffset = 0; // 0 = semana atual, -1 = anterior, etc.
 
 
-// ====== 2. HELPERS DE DATA ======
+// ====== 2. HELPERS DE DATA (CORRIGIDOS PARA FUSO HORÁRIO DO BRASIL - UTC-3) ======
+
+// 1. Função que converte a data do banco (UTC) para o horário de Brasília
+function paraHorarioBrasilia(dataISO) {
+    if (!dataISO) return new Date();
+    const data = new Date(dataISO);
+    data.setHours(data.getHours() + 3); // Adiciona 3 horas para corrigir o fuso
+    return data;
+}
+
+// 2. Gera a chave do dia (YYYY-MM-DD) usando o horário correto
 function chaveDia(d) {
-    const dataObj = new Date(d);
+    const dataObj = paraHorarioBrasilia(d);
     return `${dataObj.getFullYear()}-${String(dataObj.getMonth() + 1).padStart(2, '0')}-${String(dataObj.getDate()).padStart(2, '0')}`;
 }
 
+// 3. Formata o dia da semana e a data (Corrigido o erro de digitação)
 function formatarDia(d) {
+    const dataObj = paraHorarioBrasilia(d);
     const dias = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
-    return `${dias[d.getDay()]}, ${String(data.getDate()).padStart(2, '0')}/${String(data.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+    return `${dias[dataObj.getDay()]}, ${String(dataObj.getDate()).padStart(2, '0')}/${String(dataObj.getMonth() + 1).padStart(2, '0')}/${dataObj.getFullYear()}`;
 }
 
+// 4. Formata data e hora completa para exibição
 function formatarData(dataISO) {
     if (!dataISO) return 'Data não registrada';
-    const data = new Date(dataISO);
-    const dia = String(data.getDate()).padStart(2, '0');
-    const mes = String(data.getMonth() + 1).padStart(2, '0');
-    const ano = data.getFullYear();
-    const hora = String(data.getHours()).padStart(2, '0');
-    const min = String(data.getMinutes()).padStart(2, '0');
+    const dataObj = paraHorarioBrasilia(dataISO);
+    const dia = String(dataObj.getDate()).padStart(2, '0');
+    const mes = String(dataObj.getMonth() + 1).padStart(2, '0');
+    const ano = dataObj.getFullYear();
+    const hora = String(dataObj.getHours()).padStart(2, '0');
+    const min = String(dataObj.getMinutes()).padStart(2, '0');
     return `${dia}/${mes}/${ano} às ${hora}:${min}`;
 }
 
