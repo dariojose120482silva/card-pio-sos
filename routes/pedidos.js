@@ -69,8 +69,12 @@ router.delete('/:id', async (req, res) => {
         const pedido = await Pedido.findById(req.params.id);
         if (!pedido) return res.status(404).json({ message: 'Pedido não encontrado' });
         
+        // Monta a descrição exata usando o ID do pedido encontrado
+        const descricao = 'Pedido #' + pedido._id.toString().slice(-4);
+        
+        // Deleta o pedido e a movimentação financeira correspondente
         await Pedido.findByIdAndDelete(req.params.id);
-        await Movimentacao.deleteOne({ tipo: 'Entrada', descricao: 'Pedido #' + req.params.id.slice(-4) });
+        await Movimentacao.deleteOne({ tipo: 'Entrada', descricao: descricao });
         
         res.json({ message: 'Pedido deletado' });
     } catch (error) {
