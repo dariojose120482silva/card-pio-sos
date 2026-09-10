@@ -3,7 +3,7 @@ const router = express.Router();
 const Pedido = require('../models/Pedido');
 const Movimentacao = require('../models/Movimentacao');
 
-// 1. Criar novo pedido (NÃO cria movimentação financeira ainda)
+// 1. Criar novo pedido
 router.post('/', async (req, res) => {
     try {
         const pedido = new Pedido(req.body);
@@ -24,7 +24,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-// 3. Atualizar status do pedido (CRIA A ENTRADA FINANCEIRA AO SER ENTREGUE)
+// 3. Atualizar status do pedido (cria entrada financeira ao entregar)
 router.patch('/:id', async (req, res) => {
     try {
         const pedidoId = req.params.id;
@@ -34,41 +34,41 @@ router.patch('/:id', async (req, res) => {
             return res.status(404).json({ message: 'Pedido não encontrado' });
         }
 
-        const novoStatus = req.body.status;
-        const statusAntigo = pedido.status;
+        const novoStatus = req.body.status ? String(req.body.status).trim() : '';
+        const statusAntigo = pedido.status ? String(pedido.status).trim() : '';
 
-        // Se o status mudou para 'Entregue' e antes não era 'Entregue'
+        console.log(`📝 Pedido #${pedidoId.slice(-4)}: '${statusAntigo}' → '${novoStatus}'`);
+
+        // Cria entrada financeira quando muda para Entregue
         if (novoStatus === 'Entregue' && statusAntigo !== 'Entregue') {
-            const descricaoMovimentacao = 'Pedido #' + pedidoId.toString().slice(-4);
+            const descricao = 'Pedido #' + pedidoId.toString().slice(-4);
             
-            // Verifica se já não existe essa entrada (evita duplicidade)
-            const entradaExistente = await Movimentacao.findOne({ 
+            const existe = await Movimentacao.findOne({ 
                 tipo: 'Entrada', 
-                descricao: descricaoMovimentacao 
+                descricao: descricao 
             });
 
-            if (!entradaExistente) {
+            if (!existe) {
                 await new Movimentacao({
                     tipo: 'Entrada',
-                    descricao: descricaoMovimentacao,
+                    descricao: descricao,
                     valor: pedido.total,
                     categoria: 'Venda',
-                    data: pedido.dataPedido // ✅ PRESERVA A DATA ORIGINAL DO PEDIDO
+                    data: pedido.dataPedido
                 }).save();
+                console.log(`💰 Entrada criada: R$ ${pedido.total}`);
             }
         }
 
-        // Atualiza o status
         pedido.status = novoStatus;
         await pedido.save();
-        
         res.json(pedido);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 });
 
-// 4. Deletar pedido (e remover do financeiro)
+// 4. Deletar pedido
 router.delete('/:id', async (req, res) => {
     try {
         const pedidoId = req.params.id;
@@ -80,19 +80,19 @@ router.delete('/:id', async (req, res) => {
         
         await Pedido.findByIdAndDelete(pedidoId);
         
-        const descricaoParaDeletar = 'Pedido #' + pedidoId.toString().slice(-4);
+        const descricao = 'Pedido #' + pedidoId.toString().slice(-4);
         await Movimentacao.deleteOne({
             tipo: 'Entrada',
-            descricao: descricaoParaDeletar
+            descricao: descricao
         });
         
-        res.json({ message: 'Pedido e registro financeiro deletados com sucesso' });
+        res.json({ message: 'Pedido deletado' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
 
-// ✅ 5. NOVA ROTA: Buscar pedido específico por ID (pública, para a página de sucesso)
+// 5. Rota pública (para página de sucesso)
 router.get('/publico/:id', async (req, res) => {
     try {
         const pedido = await Pedido.findById(req.params.id);
@@ -101,8 +101,38 @@ router.get('/publico/:id', async (req, res) => {
         }
         res.json(pedido);
     } catch (error) {
-        console.error("Erro ao buscar pedido público:", error);
         res.status(500).json({ message: error.message });
+    }
+});
+
+// 6. CORRIGIR TODOS OS PEDIDOS ENTREGUES SEM ENTRADA FINANCEIRA
+router.post('/corrigir-todos', async (req, res) => {
+    try {
+        const pedidos = await Pedido.find({ status: 'Entregue' });
+        let corrigidos = 0;
+        
+        for (const p of pedidos) {
+            const descricao = 'Pedido #' + p._id.toString().slice(-4);
+            const existe = await Movimentacao.findOne({ 
+                tipo: 'Entrada', 
+                descricao: descricao 
+            });
+            
+            if (!existe) {
+                await new Movimentacao({
+                    tipo: 'Entrada',
+                    descricao: descricao,
+                    valor: p.total,
+                    categoria: 'Venda',
+                    data: p.dataPedido
+                }).save();
+                corrigidos++;
+            }
+        }
+        
+        res.json({ mensagem: `✅ ${corrigidos} entradas criadas!` });
+    } catch (erro) {
+        res.status(500).json({ erro: erro.message });
     }
 });
 
