@@ -15,9 +15,12 @@ router.post('/', async (req, res) => {
 });
 
 // 2. Listar todos os pedidos
+// 2. Listar todos os pedidos
 router.get('/', async (req, res) => {
     try {
+        // Busca todos os pedidos ordenados do mais recente para o mais antigo
         const pedidos = await Pedido.find().sort({ dataPedido: -1 });
+        
         res.json(pedidos);
     } catch (error) {
         res.status(500).json({ message: error.message });
