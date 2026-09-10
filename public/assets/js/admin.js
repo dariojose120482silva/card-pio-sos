@@ -5,12 +5,12 @@ let semanaOffset = 0; // 0 = semana atual, -1 = anterior, etc.
 // ====== 2. HELPERS DE DATA ======
 function chaveDia(d) {
     const dataObj = new Date(d);
-    return `${dataObj.getUTCFullYear()}-${String(dataObj.getUTCMonth() + 1).padStart(2, '0')}-${String(dataObj.getUTCDate()).padStart(2, '0')}`;
+    return `${dataObj.getFullYear()}-${String(dataObj.getMonth() + 1).padStart(2, '0')}-${String(dataObj.getDate()).padStart(2, '0')}`;
 }
 
 function formatarDia(d) {
     const dias = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
-    return `${dias[d.getDay()]}, ${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+    return `${dias[d.getDay()]}, ${String(data.getDate()).padStart(2, '0')}/${String(data.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
 }
 
 function formatarData(dataISO) {
