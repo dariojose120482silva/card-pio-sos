@@ -1,9 +1,11 @@
 // ====== 1. VARIÁVEIS GLOBAIS (Devem estar no topo) ======
 let semanaOffset = 0; // 0 = semana atual, -1 = anterior, etc.
 
+
 // ====== 2. HELPERS DE DATA ======
 function chaveDia(d) {
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const dataObj = new Date(d);
+    return `${dataObj.getUTCFullYear()}-${String(dataObj.getUTCMonth() + 1).padStart(2, '0')}-${String(dataObj.getUTCDate()).padStart(2, '0')}`;
 }
 
 function formatarDia(d) {
@@ -65,8 +67,9 @@ function getPeriodoTexto() {
 
 function estaDentroDaSemana(dataPedido) {
     const hoje = new Date();
+    const diaSemana = hoje.getDay() || 7; // Faz o domingo ser 7
     const inicioSemana = new Date(hoje);
-    inicioSemana.setDate(hoje.getDate() - hoje.getDay() + (semanaOffset * 7));
+    inicioSemana.setDate(hoje.getDate() - diaSemana + 1 + (semanaOffset * 7)); // +1 para iniciar na Segunda-feira
     inicioSemana.setHours(0, 0, 0, 0);
 
     const fimSemana = new Date(inicioSemana);

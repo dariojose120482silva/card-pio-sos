@@ -14,7 +14,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-// 2. Listar todos os pedidos
+
 // 2. Listar todos os pedidos
 router.get('/', async (req, res) => {
     try {
