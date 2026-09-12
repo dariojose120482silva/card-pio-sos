@@ -2,30 +2,30 @@
 let semanaOffset = 0; // 0 = semana atual, -1 = anterior, etc.
 
 
-// ====== 2. HELPERS DE DATA (CORRIGIDOS PARA FUSO HORÁRIO DO BRASIL - UTC-3) ======
 
-// 1. Função que converte a data do banco (UTC) para o horário de Brasília
+
+// ====== 2. HELPERS DE DATA (CORREÇÃO DEFINITIVA) ======
+
 function paraHorarioBrasilia(dataISO) {
     if (!dataISO) return new Date();
     const data = new Date(dataISO);
-    data.setHours(data.getHours() + 3); // Adiciona 3 horas para corrigir o fuso
+    // REMOVEMOS o "+ 3" porque o navegador JÁ converte automaticamente para o horário do Brasil.
+    // Somar +3 em cima disso é o que fazia 21:00 virar 00:00 do dia seguinte!
     return data;
 }
 
-// 2. Gera a chave do dia (YYYY-MM-DD) usando o horário correto
 function chaveDia(d) {
     const dataObj = paraHorarioBrasilia(d);
     return `${dataObj.getFullYear()}-${String(dataObj.getMonth() + 1).padStart(2, '0')}-${String(dataObj.getDate()).padStart(2, '0')}`;
 }
 
-// 3. Formata o dia da semana e a data (Corrigido o erro de digitação)
 function formatarDia(d) {
     const dataObj = paraHorarioBrasilia(d);
     const dias = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+    // CORREÇÃO: Trocamos 'data' por 'dataObj' (o erro de digitação que quebrava a tela)
     return `${dias[dataObj.getDay()]}, ${String(dataObj.getDate()).padStart(2, '0')}/${String(dataObj.getMonth() + 1).padStart(2, '0')}/${dataObj.getFullYear()}`;
 }
 
-// 4. Formata data e hora completa para exibição
 function formatarData(dataISO) {
     if (!dataISO) return 'Data não registrada';
     const dataObj = paraHorarioBrasilia(dataISO);
@@ -185,7 +185,7 @@ async function carregarDadosReais() {
             totalEntradasSemana += p.total;
         });
 
-         // Soma saídas do financeiro da semana
+        // Soma saídas do financeiro da semana
         const resFinLista = await fetch('/api/financeiro');
         const listaFin = await resFinLista.json();
         listaFin.filter(f => estaDentroDaSemana(f.data) && (f.tipo === 'Saida' || f.tipo === 'Saída')).forEach(f => {
@@ -274,26 +274,29 @@ async function carregarDadosReais() {
 
         const containerFin = document.getElementById('lista-lancamentos-fin');
         if (containerFin) {
-            containerFin.innerHTML = listaFin.length === 0
+            // Ordena a lista do mais recente para o mais antigo
+            const listaOrdenada = [...listaFin].sort((a, b) => new Date(b.data) - new Date(a.data));
+
+            containerFin.innerHTML = listaOrdenada.length === 0
                 ? '<p style="color: #888; text-align: center; padding: 10px;">Nenhum lançamento registrado.</p>'
-                : listaFin.map(f => `
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; background: #2d2d2d; border-radius: 6px; border-left: 4px solid ${f.tipo === 'Entrada' ? '#28a745' : '#dc3545'};">
-                        <div>
-                            <strong style="color: #fff;">${f.tipo === 'Entrada' ? '💵' : '💸'} ${f.descricao}</strong> 
-                            <span style="color: #aaa; font-size: 0.85rem;">(${f.categoria || 'Geral'})</span><br>
-                            <small style="color: #888;">${formatarData(f.data)}</small>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <strong style="color: ${f.tipo === 'Entrada' ? '#28a745' : '#dc3545'}; font-size: 1.1rem;">
-                                R$ ${f.valor.toFixed(2)}
-                            </strong>
-                            <button onclick="excluirLancamentoFinanceiro('${f._id}')" 
-                                style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;" title="Excluir">
-                                🗑️
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
+                : listaOrdenada.map(f => `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; background: #2d2d2d; border-radius: 6px; border-left: 4px solid ${f.tipo === 'Entrada' ? '#28a745' : '#dc3545'};">
+                <div>
+                    <strong style="color: #fff;">${f.tipo === 'Entrada' ? '💵' : '💸'} ${f.descricao}</strong> 
+                    <span style="color: #aaa; font-size: 0.85rem;">(${f.categoria || 'Geral'})</span><br>
+                    <small style="color: #888;">${formatarData(f.data)}</small>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <strong style="color: ${f.tipo === 'Entrada' ? '#28a745' : '#dc3545'}; font-size: 1.1rem;">
+                        R$ ${f.valor.toFixed(2)}
+                    </strong>
+                    <button onclick="excluirLancamentoFinanceiro('${f._id}')" 
+                        style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;" title="Excluir">
+                        🗑️
+                    </button>
+                </div>
+            </div>
+        `).join('');
         }
     } catch (erro) {
         console.error("Erro ao carregar dados:", erro);

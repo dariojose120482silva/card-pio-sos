@@ -8,6 +8,23 @@ router.post('/', async (req, res) => {
     try {
         const pedido = new Pedido(req.body);
         await pedido.save();
+
+        // CORREÇÃO: Se o pedido for criado já como "Entregue" (comum em pedidos de dinheiro), 
+        // cria a entrada financeira imediatamente para não perder o registro.
+        if (pedido.status === 'Entregue') {
+            const descricao = 'Pedido #' + pedido._id.toString().slice(-4);
+            const existe = await Movimentacao.findOne({ tipo: 'Entrada', descricao });
+            if (!existe) {
+                await new Movimentacao({
+                    tipo: 'Entrada',
+                    descricao: descricao,
+                    valor: pedido.total,
+                    categoria: 'Venda',
+                    data: pedido.dataPedido
+                }).save();
+            }
+        }
+
         res.status(201).json(pedido);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -20,7 +37,7 @@ router.get('/', async (req, res) => {
     try {
         // Busca todos os pedidos ordenados do mais recente para o mais antigo
         const pedidos = await Pedido.find().sort({ dataPedido: -1 });
-        
+
         res.json(pedidos);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -39,10 +56,10 @@ router.patch('/:id', async (req, res) => {
         // Se mudou PARA Entregue e NÃO era Entregue antes
         if (novoStatus === 'Entregue' && statusAntigo !== 'Entregue') {
             const descricao = 'Pedido #' + pedido._id.toString().slice(-4);
-            
+
             // Verifica se já existe para não duplicar
             const existe = await Movimentacao.findOne({ tipo: 'Entrada', descricao });
-            
+
             if (!existe) {
                 await new Movimentacao({
                     tipo: 'Entrada',
@@ -68,14 +85,14 @@ router.delete('/:id', async (req, res) => {
     try {
         const pedido = await Pedido.findById(req.params.id);
         if (!pedido) return res.status(404).json({ message: 'Pedido não encontrado' });
-        
+
         // Monta a descrição exata usando o ID do pedido encontrado
         const descricao = 'Pedido #' + pedido._id.toString().slice(-4);
-        
+
         // Deleta o pedido e a movimentação financeira correspondente
         await Pedido.findByIdAndDelete(req.params.id);
         await Movimentacao.deleteOne({ tipo: 'Entrada', descricao: descricao });
-        
+
         res.json({ message: 'Pedido deletado' });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -93,16 +110,16 @@ router.get('/publico/:id', async (req, res) => {
     }
 });
 
-// 6. FERRAMENTA DE CORREÇÃO EM MASSA (Para salvar os pedidos de terça/quarta)
+// 6. FERRAMENTA DE CORREÇÃO EM MASSA (MUDADO PARA GET)
 router.get('/corrigir-historico', async (req, res) => {
     try {
         const pedidosEntregues = await Pedido.find({ status: 'Entregue' });
         let corrigidos = 0;
-        
+
         for (const p of pedidosEntregues) {
             const descricao = 'Pedido #' + p._id.toString().slice(-4);
             const existe = await Movimentacao.findOne({ tipo: 'Entrada', descricao });
-            
+
             if (!existe) {
                 await new Movimentacao({
                     tipo: 'Entrada',
@@ -114,7 +131,8 @@ router.get('/corrigir-historico', async (req, res) => {
                 corrigidos++;
             }
         }
-        res.json({ mensagem: `Sucesso! ${corrigidos} entradas foram criadas no histórico.` });
+
+        res.send(`<h1 style="color: green; text-align: center; margin-top: 50px;">✅ Sucesso! ${corrigidos} entradas foram criadas no histórico.</h1><p style="text-align: center;"><a href="/admin.html">Voltar ao Painel</a></p>`);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
