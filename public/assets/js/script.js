@@ -175,7 +175,8 @@ window.atualizarInterface = function () {
 }
 
 // ==========================================
-// 4. FUNÇÃO FINALIZAR PEDIDO (CORRIGIDA)
+// ==========================================
+// 4. FUNÇÃO FINALIZAR PEDIDO (CORRIGIDA - SALVA NO BANCO)
 // ==========================================
 window.finalizarPedido = async function () {
     if (carrinho.length === 0) {
@@ -202,15 +203,67 @@ window.finalizarPedido = async function () {
     }
 
     const btn = document.getElementById('finalizarPedido');
+    const textoOriginal = btn.innerHTML;
+
+    // ==========================================
+    // FUNÇÃO AUXILIAR: Salvar Pedido no Banco
+    // ==========================================
+    async function salvarPedidoNoBanco(formaPgtoTexto) {
+        const dadosPedido = {
+            cliente: {
+                nome: nome,
+                telefone: telefone,
+                bairro: bairroNome,
+                endereco: endereco,
+                referencia: referencia
+            },
+            itens: carrinho.map(item => ({
+                nome: item.pizza,
+                quantidade: 1,
+                preco: item.preco
+            })),
+            subtotal: subtotal,
+            taxaEntrega: taxaEntrega,
+            total: total,
+            formaPagamento: formaPgtoTexto,
+            status: 'Pendente' // Já entra como Pendente no painel
+        };
+
+        try {
+            const response = await fetch('/api/pedidos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dadosPedido)
+            });
+
+            if (response.ok) {
+                console.log('✅ Pedido salvo automaticamente no sistema!');
+                return true;
+            } else {
+                console.error('Erro ao salvar pedido:', await response.text());
+                return false;
+            }
+        } catch (error) {
+            console.error('Falha de conexão ao salvar pedido:', error);
+            return false;
+        }
+    }
 
     // ==========================================
     // CENÁRIO 1: PAGAMENTO VIA WHATSAPP (DINHEIRO/PIX MANUAL)
     // ==========================================
     if (formaPagamento === 'whatsapp') {
-        let mensagem = ` *NOVO PEDIDO - S.O.S PIZZA*\n\n`;
-        mensagem += ` *Cliente:* ${nome}\n`;
-        mensagem += ` *Telefone:* ${telefone}\n`;
-        mensagem += ` *Endereço:* ${endereco}, ${bairroNome}\n`;
+        // 1️⃣ PRIMEIRO: Salva no banco de dados
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+        btn.disabled = true;
+
+        const salvo = await salvarPedidoNoBanco('Dinheiro/PIX na Entrega');
+
+        // 2️ DEPOIS: Abre o WhatsApp (mesmo se falhar o salvamento)
+        let mensagem = `*NOVO PEDIDO - S.O.S PIZZA*\n\n`;
+        mensagem += `*Cliente:* ${nome}\n`;
+        mensagem += `*Telefone:* ${telefone}\n`;
+        mensagem += `*Endereço:* ${endereco}, ${bairroNome}\n`;
         if (referencia) mensagem += `🏠 *Referência:* ${referencia}\n`;
         mensagem += `\n📋 *Itens do Pedido:*\n`;
 
@@ -225,11 +278,18 @@ window.finalizarPedido = async function () {
 
         window.open(`https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`, '_blank');
 
-        // Limpar carrinho após enviar
+        // 3️⃣ Limpa carrinho
         carrinho = [];
         salvarCarrinho();
         atualizarInterface();
         document.getElementById('cartSidebar').classList.remove('open');
+
+        btn.innerHTML = textoOriginal;
+        btn.disabled = false;
+
+        if (!salvo) {
+            alert('⚠️ Pedido enviado no WhatsApp, mas não foi salvo no sistema. Verifique sua conexão.');
+        }
         return;
     }
 
@@ -245,8 +305,8 @@ window.finalizarPedido = async function () {
         const cpf = cpfInput ? cpfInput.value.replace(/\D/g, '') : '';
 
         if (!cpf || cpf.length !== 11) {
-            alert('⚠️ Por favor, preencha o CPF corretamente para pagamento online.');
-            btn.innerHTML = '<i class="fas fa-check-circle"></i> Finalizar Pedido';
+            alert('️ Por favor, preencha o CPF corretamente para pagamento online.');
+            btn.innerHTML = textoOriginal;
             btn.disabled = false;
             return;
         }
@@ -254,6 +314,10 @@ window.finalizarPedido = async function () {
         // Limpa o telefone (apenas números)
         const telefoneLimpo = telefone.replace(/\D/g, '');
 
+        // 1️⃣ PRIMEIRO: Salva o pedido como "Aguardando Pagamento"
+        await salvarPedidoNoBanco('Cartão (Aguardando Pagamento)');
+
+        // 2️ DEPOIS: Gera o link do Mercado Pago
         const dadosPagamento = {
             items: carrinho.map(item => ({
                 nome: item.pizza,
@@ -282,6 +346,9 @@ window.finalizarPedido = async function () {
             const data = await response.json();
 
             if (data.init_point) {
+                // Limpa carrinho antes de redirecionar
+                carrinho = [];
+                salvarCarrinho();
                 window.location.href = data.init_point;
             } else {
                 throw new Error(data.error || 'Falha ao gerar link');
@@ -289,7 +356,7 @@ window.finalizarPedido = async function () {
         } catch (error) {
             console.error(error);
             alert('❌ Erro ao processar pagamento. Tente usar o WhatsApp.');
-            btn.innerHTML = '<i class="fas fa-check-circle"></i> Finalizar Pedido';
+            btn.innerHTML = textoOriginal;
             btn.disabled = false;
         }
     }
@@ -380,13 +447,13 @@ function renderizarBebidas() {
                 <h3 class="menu-item-name">🥤 ${bebida.nome}</h3>
                 <div>
                     ${bebida.tamanhos.map(t => {
-                        const nomeIndividual = `${bebida.nome} (${t.tipo})`;
-                        return `
+        const nomeIndividual = `${bebida.nome} (${t.tipo})`;
+        return `
                             <button class="btn-add" onclick="adicionarAoCarrinho('${nomeIndividual.replace(/'/g, "\\'")}', '${t.tipo}', ${t.preco})">
                                 ${t.tipo} R$ ${t.preco.toFixed(2).replace('.', ',')}
                             </button>
                         `;
-                    }).join('')}
+    }).join('')}
                 </div>
             </div>
         </div>

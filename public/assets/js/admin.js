@@ -303,6 +303,7 @@ async function carregarDadosReais() {
         document.querySelectorAll('.section').forEach(s => s.innerHTML = '<p class="danger">⚠️ Erro ao conectar com o banco.</p>');
     }
 }
+
 // ====== 8. SALVAR PEDIDO REAL ======
 async function salvarPedidoReal() {
     const subtotal = parseFloat(document.getElementById('pedidoSubtotal').value) || 0;
